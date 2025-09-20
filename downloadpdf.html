@@ -20,7 +20,7 @@
     <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md slide-up">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">JURNAL MENGAJAR GURU</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">📚 Presensi Siswa</h1>
                 <p class="text-gray-600">Silakan login untuk melanjutkan</p>
             </div>
             <form id="loginForm" class="space-y-6">
@@ -46,7 +46,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center py-4">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Dashboard Presensi</h1>
+                        <h1 class="text-2xl font-bold text-gray-900">📚 Dashboard Presensi</h1>
                         <p id="userInfo" class="text-sm text-gray-600"></p>
                     </div>
                     <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-200">
@@ -136,40 +136,8 @@
                 <p class="text-sm text-gray-600 mt-2">Format CSV: Nama,Kelas</p>
             </div>
 
-           <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                    <h3 class="text-lg font-semibold">Daftar Siswa</h3>
-                    <select id="filterKelasDaftar" onchange="loadDaftarSiswa()" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua Kelas</option>
-                        <option value="X-1">X-1</option>
-                        <option value="X-2">X-2</option>
-                        <option value="X-3">X-3</option>
-                        <option value="X-4">X-4</option>
-                        <option value="X-5">X-5</option>
-                        <option value="X-6">X-6</option>
-                        <option value="X-7">X-7</option>
-                        <option value="X-8">X-8</option>
-                        <option value="X-9">X-9</option>
-                        <option value="XI-1">XI-1</option>
-                        <option value="XI-2">XI-2</option>
-                        <option value="XI-3">XI-3</option>
-                        <option value="XI-4">XI-4</option>
-                        <option value="XI-5">XI-5</option>
-                        <option value="XI-6">XI-6</option>
-                        <option value="XI-7">XI-7</option>
-                        <option value="XI-8">XI-8</option>
-                        <option value="XI-9">XI-9</option>
-                        <option value="XII-1">XII-1</option>
-                        <option value="XII-2">XII-2</option>
-                        <option value="XII-3">XII-3</option>
-                        <option value="XII-4">XII-4</option>
-                        <option value="XII-5">XII-5</option>
-                        <option value="XII-6">XII-6</option>
-                        <option value="XII-7">XII-7</option>
-                        <option value="XII-8">XII-8</option>
-                        <option value="XII-9">XII-9</option>
-                    </select>
-                </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Daftar Siswa</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto">
                         <thead>
@@ -362,8 +330,8 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <div class="flex flex-col sm:flex-row gap-4 sm:items-center">
+                <div class="space-y-4">
+                    <div class="flex flex-col gap-4">
                         <select id="filterKelasRekap" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                             <option value="">Semua Kelas</option>
                             <option value="X-1">X-1</option>
@@ -396,9 +364,9 @@
                         </select>
                         <input type="date" id="filterTanggal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button onclick="rekapHarian()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Rekap Harian</button>
-                        <button onclick="rekapSemuaWaktu()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Rekap Semua Waktu</button>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="rekapHarian()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Rekap Harian</button>
+                        <button onclick="rekapSemuaWaktu()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">Rekap Semua Waktu</button>
                     </div>
                 </div>
             </div>
@@ -418,73 +386,77 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <input type="date" id="filterTanggalJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                    <select id="filterKelasJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua Kelas</option>
-                        <option value="X-1">X-1</option>
-                        <option value="X-2">X-2</option>
-                        <option value="X-3">X-3</option>
-                        <option value="X-4">X-4</option>
-                        <option value="X-5">X-5</option>
-                        <option value="X-6">X-6</option>
-                        <option value="X-7">X-7</option>
-                        <option value="X-8">X-8</option>
-                        <option value="X-9">X-9</option>
-                        <option value="XI-1">XI-1</option>
-                        <option value="XI-2">XI-2</option>
-                        <option value="XI-3">XI-3</option>
-                        <option value="XI-4">XI-4</option>
-                        <option value="XI-5">XI-5</option>
-                        <option value="XI-6">XI-6</option>
-                        <option value="XI-7">XI-7</option>
-                        <option value="XI-8">XI-8</option>
-                        <option value="XI-9">XI-9</option>
-                        <option value="XII-1">XII-1</option>
-                        <option value="XII-2">XII-2</option>
-                        <option value="XII-3">XII-3</option>
-                        <option value="XII-4">XII-4</option>
-                        <option value="XII-5">XII-5</option>
-                        <option value="XII-6">XII-6</option>
-                        <option value="XII-7">XII-7</option>
-                        <option value="XII-8">XII-8</option>
-                        <option value="XII-9">XII-9</option>
-                    </select>
-                    <select id="filterMapelJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="">Semua Mata Pelajaran</option>
-                        <option value="Antropologi">Antropologi</option>
-                        <option value="Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)">Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)</option>
-                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                        <option value="Bahasa Indonesia Tingkat Lanjut">Bahasa Indonesia Tingkat Lanjut</option>
-                        <option value="Bahasa Inggris">Bahasa Inggris</option>
-                        <option value="Bahasa Inggris Tingkat Lanjut">Bahasa Inggris Tingkat Lanjut</option>
-                        <option value="Biologi">Biologi</option>
-                        <option value="Ekonomi">Ekonomi</option>
-                        <option value="Fisika">Fisika</option>
-                        <option value="Geografi">Geografi</option>
-                        <option value="Informatika">Informatika</option>
-                        <option value="Kimia">Kimia</option>
-                        <option value="Matematika">Matematika</option>
-                        <option value="Matematika Tingkat Lanjut">Matematika Tingkat Lanjut</option>
-                        <option value="Pendidikan Agama Buddha dan Budi Pekerti">Pendidikan Agama Buddha dan Budi Pekerti</option>
-                        <option value="Pendidikan Agama Hindu dan Budi Pekerti">Pendidikan Agama Hindu dan Budi Pekerti</option>
-                        <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
-                        <option value="Pendidikan Agama Katolik dan Budi Pekerti">Pendidikan Agama Katolik dan Budi Pekerti</option>
-                        <option value="Pendidikan Agama Khonghucu dan Budi Pekerti">Pendidikan Agama Khonghucu dan Budi Pekerti</option>
-                        <option value="Pendidikan Agama Kristen dan Budi Pekerti">Pendidikan Agama Kristen dan Budi Pekerti</option>
-                        <option value="Pendidikan Agama dan Budi Pekerti">Pendidikan Agama dan Budi Pekerti</option>
-                        <option value="Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)">Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
-                        <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
-                        <option value="Prakarya & Kewirausahaan">Prakarya & Kewirausahaan</option>
-                        <option value="Seni dan Budaya (Musik, Rupa, Tari, Teater)">Seni dan Budaya (Musik, Rupa, Tari, Teater)</option>
-                        <option value="Sosiologi">Sosiologi</option>
-                    </select>
-                    <button onclick="loadJurnal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Tampilkan</button>
-                    <button onclick="downloadJurnalPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">📄 Download PDF</button>
+                <div class="space-y-4">
+                    <div class="flex flex-col gap-4">
+                        <input type="date" id="filterTanggalJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <select id="filterKelasJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Semua Kelas</option>
+                            <option value="X-1">X-1</option>
+                            <option value="X-2">X-2</option>
+                            <option value="X-3">X-3</option>
+                            <option value="X-4">X-4</option>
+                            <option value="X-5">X-5</option>
+                            <option value="X-6">X-6</option>
+                            <option value="X-7">X-7</option>
+                            <option value="X-8">X-8</option>
+                            <option value="X-9">X-9</option>
+                            <option value="XI-1">XI-1</option>
+                            <option value="XI-2">XI-2</option>
+                            <option value="XI-3">XI-3</option>
+                            <option value="XI-4">XI-4</option>
+                            <option value="XI-5">XI-5</option>
+                            <option value="XI-6">XI-6</option>
+                            <option value="XI-7">XI-7</option>
+                            <option value="XI-8">XI-8</option>
+                            <option value="XI-9">XI-9</option>
+                            <option value="XII-1">XII-1</option>
+                            <option value="XII-2">XII-2</option>
+                            <option value="XII-3">XII-3</option>
+                            <option value="XII-4">XII-4</option>
+                            <option value="XII-5">XII-5</option>
+                            <option value="XII-6">XII-6</option>
+                            <option value="XII-7">XII-7</option>
+                            <option value="XII-8">XII-8</option>
+                            <option value="XII-9">XII-9</option>
+                        </select>
+                        <select id="filterMapelJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Semua Mata Pelajaran</option>
+                            <option value="Antropologi">Antropologi</option>
+                            <option value="Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)">Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)</option>
+                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                            <option value="Bahasa Indonesia Tingkat Lanjut">Bahasa Indonesia Tingkat Lanjut</option>
+                            <option value="Bahasa Inggris">Bahasa Inggris</option>
+                            <option value="Bahasa Inggris Tingkat Lanjut">Bahasa Inggris Tingkat Lanjut</option>
+                            <option value="Biologi">Biologi</option>
+                            <option value="Ekonomi">Ekonomi</option>
+                            <option value="Fisika">Fisika</option>
+                            <option value="Geografi">Geografi</option>
+                            <option value="Informatika">Informatika</option>
+                            <option value="Kimia">Kimia</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Matematika Tingkat Lanjut">Matematika Tingkat Lanjut</option>
+                            <option value="Pendidikan Agama Buddha dan Budi Pekerti">Pendidikan Agama Buddha dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Hindu dan Budi Pekerti">Pendidikan Agama Hindu dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Katolik dan Budi Pekerti">Pendidikan Agama Katolik dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Khonghucu dan Budi Pekerti">Pendidikan Agama Khonghucu dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Kristen dan Budi Pekerti">Pendidikan Agama Kristen dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama dan Budi Pekerti">Pendidikan Agama dan Budi Pekerti</option>
+                            <option value="Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)">Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
+                            <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                            <option value="Prakarya & Kewirausahaan">Prakarya & Kewirausahaan</option>
+                            <option value="Seni dan Budaya (Musik, Rupa, Tari, Teater)">Seni dan Budaya (Musik, Rupa, Tari, Teater)</option>
+                            <option value="Sosiologi">Sosiologi</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="loadJurnal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Tampilkan</button>
+                        <button onclick="downloadJurnalPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">📄 Download PDF</button>
+                    </div>
                 </div>
             </div>
 
-           <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="bg-white rounded-xl shadow-lg p-6">
                 <!-- Desktop Table -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full table-auto">
@@ -1004,14 +976,7 @@
             const tbody = document.getElementById('daftarSiswa');
             tbody.innerHTML = '';
             
-            const filterKelas = document.getElementById('filterKelasDaftar').value;
-            let filteredSiswa = siswaData;
-            
-            if (filterKelas) {
-                filteredSiswa = siswaData.filter(s => s.kelas === filterKelas);
-            }
-            
-            filteredSiswa.forEach((siswa, index) => {
+            siswaData.forEach((siswa, index) => {
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
                 row.innerHTML = `
@@ -1392,7 +1357,7 @@
             document.getElementById('hasilRekap').innerHTML = html;
         }
 
-       function loadJurnal() {
+        function loadJurnal() {
             const tanggal = document.getElementById('filterTanggalJurnal').value;
             const kelas = document.getElementById('filterKelasJurnal').value;
             const mapel = document.getElementById('filterMapelJurnal').value;
@@ -1605,7 +1570,7 @@
             }
             
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF('landscape');
             
             // Group jurnal by date
             const jurnalByDate = {};
@@ -1638,7 +1603,7 @@
                 doc.setFontSize(12);
                 doc.setFont(undefined, 'bold');
                 doc.text(`Tanggal: ${tanggalKey}`, 20, yPosition);
-                yPosition += 10;
+                yPosition += 5;
                 
                 // Prepare table data
                 const tableData = jurnalTanggal.map((jurnal, index) => [
@@ -1662,29 +1627,31 @@
                     body: tableData,
                     startY: yPosition,
                     styles: {
-                        fontSize: 8,
-                        cellPadding: 2
+                        fontSize: 7,
+                        cellPadding: 1.5
                     },
                     headStyles: {
                         fillColor: [66, 139, 202],
                         textColor: 255,
-                        fontStyle: 'bold'
+                        fontStyle: 'bold',
+                        fontSize: 7
                     },
                     columnStyles: {
-                        0: { cellWidth: 8 },  // No
-                        1: { cellWidth: 20 }, // Mata Pelajaran
-                        2: { cellWidth: 12 }, // Kelas
-                        3: { cellWidth: 18 }, // Tanggal
-                        4: { cellWidth: 12 }, // Jam Awal
-                        5: { cellWidth: 12 }, // Jam Akhir
-                        6: { cellWidth: 10 }, // Hadir
-                        7: { cellWidth: 12 }, // Tidak Hadir
-                        8: { cellWidth: 30 }, // Nama Siswa Tidak Hadir
-                        9: { cellWidth: 25 }, // Kegiatan
-                        10: { cellWidth: 25 }, // Materi
-                        11: { cellWidth: 20 }  // Keterangan
+                        0: { cellWidth: 8 },   // No
+                        1: { cellWidth: 30 },  // Mata Pelajaran
+                        2: { cellWidth: 12 },  // Kelas
+                        3: { cellWidth: 18 },  // Tanggal
+                        4: { cellWidth: 12 },  // Jam Awal
+                        5: { cellWidth: 12 },  // Jam Akhir
+                        6: { cellWidth: 12 },  // Hadir
+                        7: { cellWidth: 15 },  // Tidak Hadir
+                        8: { cellWidth: 40 },  // Nama Siswa Tidak Hadir
+                        9: { cellWidth: 35 },  // Kegiatan
+                        10: { cellWidth: 35 }, // Materi
+                        11: { cellWidth: 25 }  // Keterangan
                     },
-                    margin: { left: 10, right: 10 }
+                    margin: { left: 15, right: 15 },
+                    tableWidth: 'auto'
                 });
             });
             
@@ -1701,4 +1668,5 @@
             showAlert('PDF berhasil diunduh!', 'success');
         }
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98207bcca25cff96',t:'MTc1ODM2MjUwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
