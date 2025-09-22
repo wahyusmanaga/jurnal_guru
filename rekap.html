@@ -85,6 +85,29 @@
       .minggu:last-child { page-break-after: auto; }
       .editable-input { border: none; background: transparent; }
     }
+
+    @media print {
+  @page {
+    size: A4 portrait;   /* atau landscape jika butuh melebar */
+    margin: 15mm;
+  }
+
+  table, tr, td, th {
+    page-break-inside: avoid !important;
+  }
+
+  .hari, .rangkuman, .tanda-tangan {
+    page-break-inside: avoid !important;
+  }
+
+  .minggu {
+    page-break-before: always;  /* setiap minggu mulai di halaman baru */
+  }
+  .minggu:first-child {
+    page-break-before: auto;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -135,40 +158,56 @@
   const container = document.getElementById("jurnal-container");
   let currentData = {};
 
-  
-  // Get dates for a specific week in a month
-  function getWeekDates(year, month, weekNumber) {
-  const firstDay = new Date(year, month - 1, 1);
+  // === Fungsi bikin inisial ===
+  function buatInisial(namaList) {
+    return namaList
+      .split(',')
+      .map(n => n.trim())
+      .filter(n => n !== '')
+      .map(n => {
+        const matchWithNumber = n.match(/^(.+?)\s+(\d+)\s*\(([^)]+)\)$/);
+        const matchWithoutNumber = n.match(/^(.+?)\s*\(([^)]+)\)$/);
 
-  // cari Senin pertama di bulan
-  const dayOfWeek = firstDay.getDay(); // 0 = Minggu, 1 = Senin
-  const offset = (dayOfWeek === 0 ? 1 : (1 - dayOfWeek + 7) % 7); 
-  const firstMonday = new Date(year, month - 1, 1 + offset);
-
-  // cari Senin pada minggu ke-x
-  const weekStart = new Date(firstMonday);
-  weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
-
-  const dates = [];
-  for (let i = 0; i < 5; i++) {
-    const date = new Date(weekStart);
-    date.setDate(weekStart.getDate() + i);
-
-    // Format ke Indonesia: YYYY-MM-DD
-    const formatted = date.toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).split("/").reverse().join("-"); 
-
-    dates.push(formatted);
+        if (matchWithNumber) {
+          const fullName = matchWithNumber[1].trim();
+          const number = matchWithNumber[2].trim();
+          const status = matchWithNumber[3].trim();
+          const initials = fullName.split(/\s+/).map(w => w[0]).join('').toUpperCase();
+          return `${initials}${number}(${status[0].toUpperCase()})`;
+        } else if (matchWithoutNumber) {
+          const fullName = matchWithoutNumber[1].trim();
+          const status = matchWithoutNumber[2].trim();
+          const initials = fullName.split(/\s+/).map(w => w[0]).join('').toUpperCase();
+          return `${initials}(${status[0].toUpperCase()})`;
+        }
+        return n;
+      })
+      .join(', ');
   }
 
-  return dates;
-}
+  // === Ambil tanggal minggu ke-x dalam bulan ===
+  function getWeekDates(year, month, weekNumber) {
+    const firstDay = new Date(year, month - 1, 1);
+    const dayOfWeek = firstDay.getDay();
+    const offset = (dayOfWeek === 0 ? 1 : (1 - dayOfWeek + 7) % 7);
+    const firstMonday = new Date(year, month - 1, 1 + offset);
 
+    const weekStart = new Date(firstMonday);
+    weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
 
-  // Load data from Supabase
+    const dates = [];
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + i);
+      const formatted = date.toLocaleDateString("id-ID", {
+        year: "numeric", month: "2-digit", day: "2-digit"
+      }).split("/").reverse().join("-");
+      dates.push(formatted);
+    }
+    return dates;
+  }
+
+  // === Load data dari Supabase ===
   async function loadJournalData(year, month) {
     try {
       const { data, error } = await supabase
@@ -179,119 +218,40 @@
         .order('tanggal', { ascending: true });
 
       if (error) throw error;
-      
-      // Organize data by date
+
       currentData = {};
       data.forEach(item => {
-        if (!currentData[item.tanggal]) {
-          currentData[item.tanggal] = [];
-        }
+        if (!currentData[item.tanggal]) currentData[item.tanggal] = [];
         currentData[item.tanggal].push(item);
       });
-      
-      return data;
     } catch (error) {
-      console.error('Error loading data:', error);
-      alert('Error loading data: ' + error.message);
-      return [];
+      console.error('Error load data:', error);
+      alert('Error load data: ' + error.message);
     }
   }
 
-  // Save or update journal entry
-  async function saveJournalEntry(date, jamAwal, field, value, existingId = null) {
-    try {
-      let result;
-      
-      if (existingId) {
-        // Update existing entry
-        const updateData = {};
-        updateData[field] = field.includes('jumlah') ? (parseInt(value) || 0) : value;
-        
-        result = await supabase
-          .from('jurnal')
-          .update(updateData)
-          .eq('id', existingId);
-      } else {
-        // Create new entry with jam_awal based on row position
-        const entryData = {
-          tanggal: date,
-          kelas: '',
-          mapel: 'Mata Pelajaran', // Default value
-          jam_awal: jamAwal,
-          jam_akhir: jamAwal, // Same as jam_awal for single period
-          jumlah_hadir: 0,
-          jumlah_tidak_hadir: 0,
-          nama_tidak_hadir: '',
-          kegiatan: '',
-          materi: '',
-          keterangan: ''
-        };
+  // === Hitung rangkuman mingguan (Ijin, Sakit, Alpha) ===
+  function hitungRangkuman(weekDates) {
+    let totalIjin = 0, totalSakit = 0, totalAlpha = 0;
 
-        // Set the specific field
-        if (field === 'kelas') entryData.kelas = value;
-        else if (field === 'jumlah_hadir') entryData.jumlah_hadir = parseInt(value) || 0;
-        else if (field === 'jumlah_tidak_hadir') entryData.jumlah_tidak_hadir = parseInt(value) || 0;
-        else if (field === 'nama_tidak_hadir') entryData.nama_tidak_hadir = value;
-        else if (field === 'kegiatan') entryData.kegiatan = value;
-        else if (field === 'materi') entryData.materi = value;
-        else if (field === 'keterangan') entryData.keterangan = value;
-
-        result = await supabase
-          .from('jurnal')
-          .insert([entryData]);
-      }
-
-      if (result.error) throw result.error;
-      
-      // Reload data to refresh the view
-      const year = parseInt(document.getElementById('tahunSelect').value);
-      const month = parseInt(document.getElementById('bulanSelect').value);
-      await loadJournalData(year, month);
-      
-    } catch (error) {
-      console.error('Error saving data:', error);
-      alert('Error saving data: ' + error.message);
-    }
-  }
-
-  // Create editable input
-  function createEditableInput(value, date, jamAwal, field, existingId = null) {
-    const input = document.createElement('input');
-    input.type = field.includes('jumlah') ? 'number' : 'text';
-    input.className = 'editable-input';
-    input.value = value || '';
-    input.placeholder = field.includes('jumlah') ? '0' : '';
-    
-    input.addEventListener('blur', async () => {
-      if (input.value.trim() !== '') {
-        const currentExistingId = input.dataset.existingId || existingId;
-        await saveJournalEntry(date, jamAwal, field, input.value, currentExistingId);
-        
-        // Recalculate weekly summaries if nama_tidak_hadir field was updated
-        if (field === 'nama_tidak_hadir') {
-          const year = parseInt(document.getElementById('tahunSelect').value);
-          const month = parseInt(document.getElementById('bulanSelect').value);
-          const weekDates = [];
-          for (let week = 1; week <= 5; week++) {
-            weekDates.push(...getWeekDates(year, month, week));
-          }
-          setTimeout(() => calculateWeeklySummaries(weekDates), 200);
+    weekDates.forEach(date => {
+      const entries = currentData[date] || [];
+      entries.forEach(entry => {
+        if (entry.nama_tidak_hadir) {
+          const txt = entry.nama_tidak_hadir;
+          totalIjin += (txt.match(/\(Ijin\)/gi) || []).length;
+          totalSakit += (txt.match(/\(Sakit\)/gi) || []).length;
+          totalAlpha += (txt.match(/\(Alpha\)/gi) || []).length;
         }
-      }
+      });
     });
-    
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        input.blur();
-      }
-    });
-    
-    return input;
+
+    return { totalIjin, totalSakit, totalAlpha };
   }
 
+  // === Buat tabel mingguan ===
   function generateWeeklyJournal(weekNumber, monthName, year, month) {
     const weekDates = getWeekDates(year, month, weekNumber);
-    
     let weekContent = `
       <div class="minggu">
         <div class="minggu-header">
@@ -299,11 +259,10 @@
         </div>
     `;
 
-    // Generate days for this week
     hariList.forEach((hari, dayIdx) => {
       const currentDate = weekDates[dayIdx];
       const dayData = currentData[currentDate] || [];
-      
+
       weekContent += `
         <div class="hari">
           <h3>Hari / Tanggal: ${hari}, ${currentDate}</h3>
@@ -320,24 +279,62 @@
                 <th>Keterangan</th>
               </tr>
             </thead>
-            <tbody id="tbody-${weekNumber}-${dayIdx}">
+            <tbody>
       `;
 
-      // Generate 11 rows for each day
-      for (let i = 0; i < 11; i++) {
-        const existingEntry = dayData[i];
-        weekContent += `
-          <tr>
-            <td>${i + 1}</td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-kelas"></td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-jumlah_hadir"></td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-jumlah_tidak_hadir"></td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-nama_tidak_hadir"></td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-kegiatan"></td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-materi"></td>
-            <td id="cell-${weekNumber}-${dayIdx}-${i}-keterangan"></td>
-          </tr>
-        `;
+      // 11 nomor (jam)
+      for (let i = 1; i <= 11; i++) {
+        const entry = dayData.find(e => i >= e.jam_awal && i <= e.jam_akhir);
+
+        if (entry) {
+          if (i === entry.jam_awal) {
+            // Baris jam_awal → tampil data
+            weekContent += `
+              <tr>
+                <td>${i}</td>
+                <td>${entry.kelas || "-"}</td>
+                <td>${entry.jumlah_hadir ?? "-"}</td>
+                <td>${entry.jumlah_tidak_hadir ?? "-"}</td>
+                <td>${
+                  entry.nama_tidak_hadir 
+                    ? `<span title="${entry.nama_tidak_hadir}">${buatInisial(entry.nama_tidak_hadir)}</span>` 
+                    : "-"
+                }</td>
+                <td>${entry.kegiatan || "-"}</td>
+                <td>${entry.materi || "-"}</td>
+                <td>${entry.keterangan || "-"}</td>
+              </tr>
+            `;
+          } else {
+            // Baris dalam rentang (jam_awal+1 ... jam_akhir) → tanda "-"
+            weekContent += `
+              <tr>
+                <td>${i}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+            `;
+          }
+        } else {
+          // Tidak ada entry sama sekali
+          weekContent += `
+            <tr>
+              <td>${i}</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          `;
+        }
       }
 
       weekContent += `
@@ -346,32 +343,42 @@
         </div>
       `;
 
-      // Add weekly summary and signatures after Friday
+      // Setelah hari Jumat → rangkuman
       if (hari === "Jumat") {
+        const rangkuman = hitungRangkuman(weekDates);
         weekContent += `
-          <table class="rangkuman" id="rangkuman-${weekNumber}">
+          <table class="rangkuman">
             <thead>
               <tr><th colspan="2">Rangkuman Mingguan</th></tr>
               <tr><th>Keterangan</th><th>Jumlah Siswa</th></tr>
             </thead>
             <tbody>
-              <tr><td>Ijin</td><td id="total-ijin-${weekNumber}">0</td></tr>
-              <tr><td>Sakit</td><td id="total-sakit-${weekNumber}">0</td></tr>
-              <tr><td>Alpha</td><td id="total-alpha-${weekNumber}">0</td></tr>
+              <tr><td>Ijin</td><td>${rangkuman.totalIjin}</td></tr>
+              <tr><td>Sakit</td><td>${rangkuman.totalSakit}</td></tr>
+              <tr><td>Alpha</td><td>${rangkuman.totalAlpha}</td></tr>
             </tbody>
           </table>
 
-          <div class="tanda-tangan">
-            <div>
-              <p>Mengetahui,</p>
-              <p>Kepala Sekolah</p>
-              <p>(_________________)</p>
-            </div>
-            <div>
-              <p>Guru Mata Pelajaran</p>
-              <p>(_________________)</p>
-            </div>
-          </div>
+          <div style="display:flex;justify-content:space-between;text-align:center;margin-top:40px;">
+
+  <!-- Kepala Sekolah -->
+  <div style="flex:1;">
+    <div style="margin-bottom:5px;">Mengetahui,</div>
+    <div style="margin-bottom:5px;">Kepala Sekolah</div>
+    <div style="margin:60px 0 5px;">_____________________</div>
+    <div style="margin:0;">NIP. ________________</div>
+  </div>
+
+  <!-- Guru Mata Pelajaran -->
+  <div style="flex:1;">
+    <div style="margin-bottom:5px;">Kota, .......................</div>
+    <div style="margin-bottom:5px;">Guru Mata Pelajaran</div>
+    <div style="margin:60px 0 5px;">_____________________</div>
+    <div style="margin:0;">NIP. ________________</div>
+  </div>
+
+</div>
+
         `;
       }
     });
@@ -380,271 +387,29 @@
     return { content: weekContent, dates: weekDates };
   }
 
+  // === Generate jurnal bulanan ===
   async function generateMonthlyJournal() {
     const selectedMonth = parseInt(document.getElementById("bulanSelect").value);
     const selectedYear = parseInt(document.getElementById("tahunSelect").value);
-    
+
     if (!selectedMonth) {
-      container.innerHTML = `
-        <div style="text-align: center; padding: 50px; color: #666;">
-          <h2>Silakan pilih bulan untuk menampilkan jurnal</h2>
-        </div>
-      `;
+      container.innerHTML = `<h2 style="text-align:center;color:#666;">Silakan pilih bulan untuk menampilkan jurnal</h2>`;
       return;
     }
 
-    // Show loading
     container.innerHTML = '<div class="loading">Memuat data...</div>';
-    
-    // Load data from database
     await loadJournalData(selectedYear, selectedMonth);
-    
-    container.innerHTML = ""; // Clear loading message
-    
+
+    container.innerHTML = "";
     const monthName = bulanNama[selectedMonth];
-    let allWeekDates = [];
-    
-    // Generate 4 weeks for the selected month
+
     for (let week = 1; week <= 5; week++) {
       const weekResult = generateWeeklyJournal(week, monthName, selectedYear, selectedMonth);
       container.innerHTML += weekResult.content;
-      allWeekDates.push(...weekResult.dates);
-    }
-    
-    // After DOM is updated, populate the input fields and calculate summaries
-    setTimeout(() => {
-      populateInputFields(allWeekDates);
-      calculateWeeklySummaries(allWeekDates);
-    }, 100);
-  }
-
-  function populateInputFields(allWeekDates) {
-    for (let week = 1; week <= 5; week++) {
-      for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
-        const currentDate = allWeekDates[(week - 1) * 5 + dayIdx];
-        const dayData = currentData[currentDate] || [];
-        
-        // First, create empty inputs for all rows
-        for (let rowIdx = 0; rowIdx < 11; rowIdx++) {
-          const fields = ['kelas', 'jumlah_hadir', 'jumlah_tidak_hadir', 'nama_tidak_hadir', 'kegiatan', 'materi', 'keterangan'];
-          
-          fields.forEach(field => {
-            const cellId = `cell-${week}-${dayIdx}-${rowIdx}-${field}`;
-            const cell = document.getElementById(cellId);
-            if (cell) {
-              const input = createEditableInput('', currentDate, rowIdx + 1, field, null);
-              cell.appendChild(input);
-            }
-          });
-        }
-        
-        // Then populate with existing data based on jam_awal
-        dayData.forEach(entry => {
-          const rowIdx = entry.jam_awal - 1; // Convert jam_awal to 0-based index
-          if (rowIdx >= 0 && rowIdx < 11) {
-            const fields = ['kelas', 'jumlah_hadir', 'jumlah_tidak_hadir', 'nama_tidak_hadir', 'kegiatan', 'materi', 'keterangan'];
-            
-            fields.forEach(field => {
-              const cellId = `cell-${week}-${dayIdx}-${rowIdx}-${field}`;
-              const cell = document.getElementById(cellId);
-              if (cell && cell.firstChild) {
-                const input = cell.firstChild;
-                if (field === 'nama_tidak_hadir' && entry[field]) {
-  input.value = entry[field]
-    .split(',')
-    .map(n => n.trim())
-    .filter(n => n !== '')
-    .map(n => {
-      const matchWithNumber = n.match(/^([A-Za-z\s]+)\s+(\d+)\s*\(([^)]+)\)$/);
-      const matchWithoutNumber = n.match(/^(.+?)\s*\(([^)]+)\)$/);
-
-      if (matchWithNumber) {
-        const fullName = matchWithNumber[1].trim();   // Contoh Siswa
-        const number = matchWithNumber[2].trim();     // 46
-        const status = matchWithNumber[3].trim();     // Ijin
-
-        const words = fullName.split(/\s+/);
-        const initials = words.map(word => word[0]).join('').toUpperCase();
-        const statusInitial = status[0].toUpperCase();
-
-        return `${initials}${number}(${statusInitial})`;
-      } else if (matchWithoutNumber) {
-        const fullName = matchWithoutNumber[1].trim();
-        const status = matchWithoutNumber[2].trim();
-
-        const words = fullName.split(/\s+/);
-        const initials = words.map(word => word[0]).join('').toUpperCase();
-        const statusInitial = status[0].toUpperCase();
-
-        return `${initials}(${statusInitial})`;
-      }
-
-      return n; // fallback
-    })
-    .join(', ');
-} else {
-  input.value = entry[field] || '';
-}
-
-                // Store the existing ID for updates
-                input.dataset.existingId = entry.id;
-              }
-            });
-          }
-        });
-      }
     }
   }
 
-  function calculateWeeklySummaries(allWeekDates) {
-    for (let week = 1; week <= 5; week++) {
-      let totalIjin = 0;
-      let totalSakit = 0;
-      let totalAlpha = 0;
-      
-      // Calculate for each day in the week (Monday to Friday)
-      for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
-        const currentDate = allWeekDates[(week - 1) * 5 + dayIdx];
-        const dayData = currentData[currentDate] || [];
-        
-        dayData.forEach(entry => {
-          if (entry.nama_tidak_hadir) {
-            const namaText = entry.nama_tidak_hadir.toLowerCase();
-            
-            // Count occurrences of each type
-            const ijinCount = (namaText.match(/ijin/g) || []).length;
-            const sakitCount = (namaText.match(/sakit/g) || []).length;
-            const alphaCount = (namaText.match(/alpha/g) || []).length;
-            
-            totalIjin += ijinCount;
-            totalSakit += sakitCount;
-            totalAlpha += alphaCount;
-          }
-        });
-      }
-      
-      // Update the summary table
-      const ijinElement = document.getElementById(`total-ijin-${week}`);
-      const sakitElement = document.getElementById(`total-sakit-${week}`);
-      const alphaElement = document.getElementById(`total-alpha-${week}`);
-      
-      if (ijinElement) ijinElement.textContent = totalIjin;
-      if (sakitElement) sakitElement.textContent = totalSakit;
-      if (alphaElement) alphaElement.textContent = totalAlpha;
-    }
-  }
-
-  function downloadPDF() {
-    const selectedMonth = document.getElementById("bulanSelect").value;
-    const selectedYear = document.getElementById("tahunSelect").value;
-    
-    if (!selectedMonth) {
-      alert("Silakan pilih bulan terlebih dahulu!");
-      return;
-    }
-
-    const monthName = bulanNama[parseInt(selectedMonth)];
-    
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank');
-    
-    // Create PDF-optimized content
-    const pdfContent = `
-      <!DOCTYPE html>
-      <html lang="id">
-      <head>
-        <meta charset="UTF-8">
-        <title>Jurnal Mengajar Guru - ${monthName} ${selectedYear}</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin: 20px;
-          }
-          .minggu {
-            margin-bottom: 60px;
-            page-break-after: always;
-          }
-          .minggu:last-child {
-            page-break-after: auto;
-          }
-          .minggu-header {
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 2px solid #000;
-          }
-          .hari {
-            margin-bottom: 40px;
-          }
-          h3 {
-            margin-bottom: 5px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-          }
-          th, td {
-            border: 1px solid #000;
-            padding: 5px;
-            text-align: center;
-          }
-          th {
-            background-color: #f2f2f2;
-          }
-          .rangkuman {
-            margin-top: 20px;
-            width: 60%;
-          }
-          .tanda-tangan {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            width: 80%;
-          }
-          .tanda-tangan div {
-            text-align: center;
-          }
-          .tanda-tangan p {
-            margin-top: 60px;
-            margin-bottom: 0;
-          }
-          input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            text-align: center;
-          }
-          @media print {
-            body { margin: 10px; }
-            .minggu { page-break-after: always; }
-            .minggu:last-child { page-break-after: auto; }
-          }
-        </style>
-      </head>
-      <body>
-        ${document.getElementById('jurnal-container').innerHTML}
-      </body>
-      </html>
-    `;
-    
-    // Write content to new window
-    printWindow.document.write(pdfContent);
-    printWindow.document.close();
-    
-    // Wait for content to load, then print
-    printWindow.onload = function() {
-      printWindow.print();
-      printWindow.close();
-    };
-  }
-
-  // Initialize with empty state
+  // === Jalankan awal ===
   generateMonthlyJournal();
 </script>
-
 </html>
