@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Jurnal Mengajar Guru - Database</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 20px;
+    }
+    .minggu {
+      margin-bottom: 60px;
+      page-break-after: always;
+    }
+    .minggu:last-child {
+      page-break-after: auto;
+    }
+    .minggu-header {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border: 2px solid #000;
+    }
+    .hari {
+      margin-bottom: 40px;
+    }
+    h3 {
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 5px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .rangkuman {
+      margin-top: 20px;
+      width: 60%;
+    }
+    .tanda-tangan {
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+    }
+    .tanda-tangan div {
+      text-align: center;
+    }
+    .tanda-tangan p {
+      margin-top: 60px;
+      margin-bottom: 0;
+    }
+    .editable-input {
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: center;
+      padding: 2px;
+    }
+    .editable-input:focus {
+      background: #fff3cd;
+      outline: 1px solid #ffc107;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { margin: 10px; }
+      .minggu { page-break-after: always; }
+      .minggu:last-child { page-break-after: auto; }
+      .editable-input { border: none; background: transparent; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header dan Controls -->
+<div class="no-print" style="margin-bottom: 30px; text-align: center; display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;">
+  <div>
+    <label for="bulanSelect" style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Pilih Bulan:</label>
+    <select id="bulanSelect" onchange="generateMonthlyJournal()" style="padding: 8px; border: 1px solid #ccc; font-size: 14px; border-radius: 3px;">
+      <option value="">-- Pilih Bulan --</option>
+      <option value="1">Januari</option>
+      <option value="2">Februari</option>
+      <option value="3">Maret</option>
+      <option value="4">April</option>
+      <option value="5">Mei</option>
+      <option value="6">Juni</option>
+      <option value="7">Juli</option>
+      <option value="8">Agustus</option>
+      <option value="9">September</option>
+      <option value="10">Oktober</option>
+      <option value="11">November</option>
+      <option value="12">Desember</option>
+    </select>
+  </div>
+  <div>
+    <label for="tahunSelect" style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Tahun:</label>
+    <select id="tahunSelect" onchange="generateMonthlyJournal()" style="padding: 8px; border: 1px solid #ccc; font-size: 14px; border-radius: 3px;">
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+      <option value="2026">2026</option>
+    </select>
+  </div>
+  <div>
+    <button onclick="downloadPDF()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 5px;">📄 Download PDF</button>
+  </div>
+</div>
+
+<div id="jurnal-container"></div>
+
+<script>
+  // Initialize Supabase
+  const supabaseUrl = 'https://whyybcwrtbfndplvupvz.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoeXliY3dydGJmbmRwbHZ1cHZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzMzk1NzYsImV4cCI6MjA3MzkxNTU3Nn0.w1kgBPsBBioEPmzJ58qbeD0yv7yUPUvC0d7ulKBXa_Q';
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  const hariList = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
+  const bulanNama = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const container = document.getElementById("jurnal-container");
+  let currentData = {};
+
+  
+  // Get dates for a specific week in a month
+  function getWeekDates(year, month, weekNumber) {
+  const firstDay = new Date(year, month - 1, 1);
+
+  // cari Senin pertama di bulan
+  const dayOfWeek = firstDay.getDay(); // 0 = Minggu, 1 = Senin
+  const offset = (dayOfWeek === 0 ? 1 : (1 - dayOfWeek + 7) % 7); 
+  const firstMonday = new Date(year, month - 1, 1 + offset);
+
+  // cari Senin pada minggu ke-x
+  const weekStart = new Date(firstMonday);
+  weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
+
+  const dates = [];
+  for (let i = 0; i < 5; i++) {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + i);
+
+    // Format ke Indonesia: YYYY-MM-DD
+    const formatted = date.toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).split("/").reverse().join("-"); 
+
+    dates.push(formatted);
+  }
+
+  return dates;
+}
+
+
+  // Load data from Supabase
+  async function loadJournalData(year, month) {
+    try {
+      const { data, error } = await supabase
+        .from('jurnal')
+        .select('*')
+        .gte('tanggal', `${year}-${month.toString().padStart(2, '0')}-01`)
+        .lt('tanggal', `${year}-${(month + 1).toString().padStart(2, '0')}-01`)
+        .order('tanggal', { ascending: true });
+
+      if (error) throw error;
+      
+      // Organize data by date
+      currentData = {};
+      data.forEach(item => {
+        if (!currentData[item.tanggal]) {
+          currentData[item.tanggal] = [];
+        }
+        currentData[item.tanggal].push(item);
+      });
+      
+      return data;
+    } catch (error) {
+      console.error('Error loading data:', error);
+      alert('Error loading data: ' + error.message);
+      return [];
+    }
+  }
+
+  // Save or update journal entry
+  async function saveJournalEntry(date, jamAwal, field, value, existingId = null) {
+    try {
+      let result;
+      
+      if (existingId) {
+        // Update existing entry
+        const updateData = {};
+        updateData[field] = field.includes('jumlah') ? (parseInt(value) || 0) : value;
+        
+        result = await supabase
+          .from('jurnal')
+          .update(updateData)
+          .eq('id', existingId);
+      } else {
+        // Create new entry with jam_awal based on row position
+        const entryData = {
+          tanggal: date,
+          kelas: '',
+          mapel: 'Mata Pelajaran', // Default value
+          jam_awal: jamAwal,
+          jam_akhir: jamAwal, // Same as jam_awal for single period
+          jumlah_hadir: 0,
+          jumlah_tidak_hadir: 0,
+          nama_tidak_hadir: '',
+          kegiatan: '',
+          materi: '',
+          keterangan: ''
+        };
+
+        // Set the specific field
+        if (field === 'kelas') entryData.kelas = value;
+        else if (field === 'jumlah_hadir') entryData.jumlah_hadir = parseInt(value) || 0;
+        else if (field === 'jumlah_tidak_hadir') entryData.jumlah_tidak_hadir = parseInt(value) || 0;
+        else if (field === 'nama_tidak_hadir') entryData.nama_tidak_hadir = value;
+        else if (field === 'kegiatan') entryData.kegiatan = value;
+        else if (field === 'materi') entryData.materi = value;
+        else if (field === 'keterangan') entryData.keterangan = value;
+
+        result = await supabase
+          .from('jurnal')
+          .insert([entryData]);
+      }
+
+      if (result.error) throw result.error;
+      
+      // Reload data to refresh the view
+      const year = parseInt(document.getElementById('tahunSelect').value);
+      const month = parseInt(document.getElementById('bulanSelect').value);
+      await loadJournalData(year, month);
+      
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('Error saving data: ' + error.message);
+    }
+  }
+
+  // Create editable input
+  function createEditableInput(value, date, jamAwal, field, existingId = null) {
+    const input = document.createElement('input');
+    input.type = field.includes('jumlah') ? 'number' : 'text';
+    input.className = 'editable-input';
+    input.value = value || '';
+    input.placeholder = field.includes('jumlah') ? '0' : '';
+    
+    input.addEventListener('blur', async () => {
+      if (input.value.trim() !== '') {
+        const currentExistingId = input.dataset.existingId || existingId;
+        await saveJournalEntry(date, jamAwal, field, input.value, currentExistingId);
+        
+        // Recalculate weekly summaries if nama_tidak_hadir field was updated
+        if (field === 'nama_tidak_hadir') {
+          const year = parseInt(document.getElementById('tahunSelect').value);
+          const month = parseInt(document.getElementById('bulanSelect').value);
+          const weekDates = [];
+          for (let week = 1; week <= 5; week++) {
+            weekDates.push(...getWeekDates(year, month, week));
+          }
+          setTimeout(() => calculateWeeklySummaries(weekDates), 200);
+        }
+      }
+    });
+    
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        input.blur();
+      }
+    });
+    
+    return input;
+  }
+
+  function generateWeeklyJournal(weekNumber, monthName, year, month) {
+    const weekDates = getWeekDates(year, month, weekNumber);
+    
+    let weekContent = `
+      <div class="minggu">
+        <div class="minggu-header">
+          MINGGU KE-${weekNumber} - ${monthName.toUpperCase()} ${year}
+        </div>
+    `;
+
+    // Generate days for this week
+    hariList.forEach((hari, dayIdx) => {
+      const currentDate = weekDates[dayIdx];
+      const dayData = currentData[currentDate] || [];
+      
+      weekContent += `
+        <div class="hari">
+          <h3>Hari / Tanggal: ${hari}, ${currentDate}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Kelas</th>
+                <th>Jml Hadir</th>
+                <th>Jml Tidak Hadir</th>
+                <th>Nama Tidak Hadir</th>
+                <th>Kegiatan</th>
+                <th>Materi</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-${weekNumber}-${dayIdx}">
+      `;
+
+      // Generate 11 rows for each day
+      for (let i = 0; i < 11; i++) {
+        const existingEntry = dayData[i];
+        weekContent += `
+          <tr>
+            <td>${i + 1}</td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-kelas"></td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-jumlah_hadir"></td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-jumlah_tidak_hadir"></td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-nama_tidak_hadir"></td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-kegiatan"></td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-materi"></td>
+            <td id="cell-${weekNumber}-${dayIdx}-${i}-keterangan"></td>
+          </tr>
+        `;
+      }
+
+      weekContent += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      // Add weekly summary and signatures after Friday
+      if (hari === "Jumat") {
+        weekContent += `
+          <table class="rangkuman" id="rangkuman-${weekNumber}">
+            <thead>
+              <tr><th colspan="2">Rangkuman Mingguan</th></tr>
+              <tr><th>Keterangan</th><th>Jumlah Siswa</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ijin</td><td id="total-ijin-${weekNumber}">0</td></tr>
+              <tr><td>Sakit</td><td id="total-sakit-${weekNumber}">0</td></tr>
+              <tr><td>Alpha</td><td id="total-alpha-${weekNumber}">0</td></tr>
+            </tbody>
+          </table>
+
+          <div class="tanda-tangan">
+            <div>
+              <p>Mengetahui,</p>
+              <p>Kepala Sekolah</p>
+              <p>(_________________)</p>
+            </div>
+            <div>
+              <p>Guru Mata Pelajaran</p>
+              <p>(_________________)</p>
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    weekContent += `</div>`;
+    return { content: weekContent, dates: weekDates };
+  }
+
+  async function generateMonthlyJournal() {
+    const selectedMonth = parseInt(document.getElementById("bulanSelect").value);
+    const selectedYear = parseInt(document.getElementById("tahunSelect").value);
+    
+    if (!selectedMonth) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 50px; color: #666;">
+          <h2>Silakan pilih bulan untuk menampilkan jurnal</h2>
+        </div>
+      `;
+      return;
+    }
+
+    // Show loading
+    container.innerHTML = '<div class="loading">Memuat data...</div>';
+    
+    // Load data from database
+    await loadJournalData(selectedYear, selectedMonth);
+    
+    container.innerHTML = ""; // Clear loading message
+    
+    const monthName = bulanNama[selectedMonth];
+    let allWeekDates = [];
+    
+    // Generate 4 weeks for the selected month
+    for (let week = 1; week <= 5; week++) {
+      const weekResult = generateWeeklyJournal(week, monthName, selectedYear, selectedMonth);
+      container.innerHTML += weekResult.content;
+      allWeekDates.push(...weekResult.dates);
+    }
+    
+    // After DOM is updated, populate the input fields and calculate summaries
+    setTimeout(() => {
+      populateInputFields(allWeekDates);
+      calculateWeeklySummaries(allWeekDates);
+    }, 100);
+  }
+
+  function populateInputFields(allWeekDates) {
+    for (let week = 1; week <= 5; week++) {
+      for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
+        const currentDate = allWeekDates[(week - 1) * 5 + dayIdx];
+        const dayData = currentData[currentDate] || [];
+        
+        // First, create empty inputs for all rows
+        for (let rowIdx = 0; rowIdx < 11; rowIdx++) {
+          const fields = ['kelas', 'jumlah_hadir', 'jumlah_tidak_hadir', 'nama_tidak_hadir', 'kegiatan', 'materi', 'keterangan'];
+          
+          fields.forEach(field => {
+            const cellId = `cell-${week}-${dayIdx}-${rowIdx}-${field}`;
+            const cell = document.getElementById(cellId);
+            if (cell) {
+              const input = createEditableInput('', currentDate, rowIdx + 1, field, null);
+              cell.appendChild(input);
+            }
+          });
+        }
+        
+        // Then populate with existing data based on jam_awal
+        dayData.forEach(entry => {
+          const rowIdx = entry.jam_awal - 1; // Convert jam_awal to 0-based index
+          if (rowIdx >= 0 && rowIdx < 11) {
+            const fields = ['kelas', 'jumlah_hadir', 'jumlah_tidak_hadir', 'nama_tidak_hadir', 'kegiatan', 'materi', 'keterangan'];
+            
+            fields.forEach(field => {
+              const cellId = `cell-${week}-${dayIdx}-${rowIdx}-${field}`;
+              const cell = document.getElementById(cellId);
+              if (cell && cell.firstChild) {
+                const input = cell.firstChild;
+                if (field === 'nama_tidak_hadir' && entry[field]) {
+  input.value = entry[field]
+    .split(',')
+    .map(n => n.trim())
+    .filter(n => n !== '')
+    .map(n => {
+      const matchWithNumber = n.match(/^([A-Za-z\s]+)\s+(\d+)\s*\(([^)]+)\)$/);
+      const matchWithoutNumber = n.match(/^(.+?)\s*\(([^)]+)\)$/);
+
+      if (matchWithNumber) {
+        const fullName = matchWithNumber[1].trim();   // Contoh Siswa
+        const number = matchWithNumber[2].trim();     // 46
+        const status = matchWithNumber[3].trim();     // Ijin
+
+        const words = fullName.split(/\s+/);
+        const initials = words.map(word => word[0]).join('').toUpperCase();
+        const statusInitial = status[0].toUpperCase();
+
+        return `${initials}${number}(${statusInitial})`;
+      } else if (matchWithoutNumber) {
+        const fullName = matchWithoutNumber[1].trim();
+        const status = matchWithoutNumber[2].trim();
+
+        const words = fullName.split(/\s+/);
+        const initials = words.map(word => word[0]).join('').toUpperCase();
+        const statusInitial = status[0].toUpperCase();
+
+        return `${initials}(${statusInitial})`;
+      }
+
+      return n; // fallback
+    })
+    .join(', ');
+} else {
+  input.value = entry[field] || '';
+}
+
+                // Store the existing ID for updates
+                input.dataset.existingId = entry.id;
+              }
+            });
+          }
+        });
+      }
+    }
+  }
+
+  function calculateWeeklySummaries(allWeekDates) {
+    for (let week = 1; week <= 5; week++) {
+      let totalIjin = 0;
+      let totalSakit = 0;
+      let totalAlpha = 0;
+      
+      // Calculate for each day in the week (Monday to Friday)
+      for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
+        const currentDate = allWeekDates[(week - 1) * 5 + dayIdx];
+        const dayData = currentData[currentDate] || [];
+        
+        dayData.forEach(entry => {
+          if (entry.nama_tidak_hadir) {
+            const namaText = entry.nama_tidak_hadir.toLowerCase();
+            
+            // Count occurrences of each type
+            const ijinCount = (namaText.match(/ijin/g) || []).length;
+            const sakitCount = (namaText.match(/sakit/g) || []).length;
+            const alphaCount = (namaText.match(/alpha/g) || []).length;
+            
+            totalIjin += ijinCount;
+            totalSakit += sakitCount;
+            totalAlpha += alphaCount;
+          }
+        });
+      }
+      
+      // Update the summary table
+      const ijinElement = document.getElementById(`total-ijin-${week}`);
+      const sakitElement = document.getElementById(`total-sakit-${week}`);
+      const alphaElement = document.getElementById(`total-alpha-${week}`);
+      
+      if (ijinElement) ijinElement.textContent = totalIjin;
+      if (sakitElement) sakitElement.textContent = totalSakit;
+      if (alphaElement) alphaElement.textContent = totalAlpha;
+    }
+  }
+
+  function downloadPDF() {
+    const selectedMonth = document.getElementById("bulanSelect").value;
+    const selectedYear = document.getElementById("tahunSelect").value;
+    
+    if (!selectedMonth) {
+      alert("Silakan pilih bulan terlebih dahulu!");
+      return;
+    }
+
+    const monthName = bulanNama[parseInt(selectedMonth)];
+    
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    
+    // Create PDF-optimized content
+    const pdfContent = `
+      <!DOCTYPE html>
+      <html lang="id">
+      <head>
+        <meta charset="UTF-8">
+        <title>Jurnal Mengajar Guru - ${monthName} ${selectedYear}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+          }
+          .minggu {
+            margin-bottom: 60px;
+            page-break-after: always;
+          }
+          .minggu:last-child {
+            page-break-after: auto;
+          }
+          .minggu-header {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 2px solid #000;
+          }
+          .hari {
+            margin-bottom: 40px;
+          }
+          h3 {
+            margin-bottom: 5px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+          }
+          th {
+            background-color: #f2f2f2;
+          }
+          .rangkuman {
+            margin-top: 20px;
+            width: 60%;
+          }
+          .tanda-tangan {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+          }
+          .tanda-tangan div {
+            text-align: center;
+          }
+          .tanda-tangan p {
+            margin-top: 60px;
+            margin-bottom: 0;
+          }
+          input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: center;
+          }
+          @media print {
+            body { margin: 10px; }
+            .minggu { page-break-after: always; }
+            .minggu:last-child { page-break-after: auto; }
+          }
+        </style>
+      </head>
+      <body>
+        ${document.getElementById('jurnal-container').innerHTML}
+      </body>
+      </html>
+    `;
+    
+    // Write content to new window
+    printWindow.document.write(pdfContent);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    printWindow.onload = function() {
+      printWindow.print();
+      printWindow.close();
+    };
+  }
+
+  // Initialize with empty state
+  generateMonthlyJournal();
+</script>
+
+</html>
