@@ -20,7 +20,7 @@
     <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md slide-up">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">📚 Presensi Siswa</h1>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">JURNAL MENGAJAR GURU</h2>
                 <p class="text-gray-600">Silakan login untuk melanjutkan</p>
             </div>
             <form id="loginForm" class="space-y-6">
@@ -46,7 +46,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center py-4">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">📚 Dashboard Presensi</h1>
+                        <h1 class="text-2xl font-bold text-gray-900">Dashboard Presensi</h1>
                         <p id="userInfo" class="text-sm text-gray-600"></p>
                     </div>
                     <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-200">
@@ -59,7 +59,7 @@
         <!-- Main Menu -->
         <div id="mainMenu" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <div id="menuManajemenSiswa" onclick="showPage('manajemenSiswa')" class="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition duration-300 text-center">
+                <div onclick="showPage('manajemenSiswa')" class="bg-white rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition duration-300 text-center">
                     <div class="text-4xl mb-4">👥</div>
                     <h3 class="text-lg font-semibold text-gray-800">Manajemen Siswa</h3>
                     <p class="text-gray-600 text-sm mt-2">Kelola data siswa</p>
@@ -91,18 +91,39 @@
             
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <h3 class="text-lg font-semibold mb-4">Tambah Siswa Baru</h3>
-                <form id="formTambahSiswa" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <form id="formTambahSiswa" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <input type="text" id="namaSiswa" placeholder="Nama Siswa" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                    <input type="text" id="nisSiswa" placeholder="NIS (Nomor Induk Siswa)" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                    <select id="jenisKelaminSiswa" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                        <option value="">Pilih Jenis Kelamin</option>
-                        <option value="L">Laki-laki</option>
-                        <option value="P">Perempuan</option>
-                    </select>
                     <select id="kelasSiswa" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         <option value="">Pilih Kelas</option>
+                        <option value="X-1">X-1</option>
+                        <option value="X-2">X-2</option>
+                        <option value="X-3">X-3</option>
+                        <option value="X-4">X-4</option>
+                        <option value="X-5">X-5</option>
+                        <option value="X-6">X-6</option>
+                        <option value="X-7">X-7</option>
+                        <option value="X-8">X-8</option>
+                        <option value="X-9">X-9</option>
+                        <option value="XI-1">XI-1</option>
+                        <option value="XI-2">XI-2</option>
+                        <option value="XI-3">XI-3</option>
+                        <option value="XI-4">XI-4</option>
+                        <option value="XI-5">XI-5</option>
+                        <option value="XI-6">XI-6</option>
+                        <option value="XI-7">XI-7</option>
+                        <option value="XI-8">XI-8</option>
+                        <option value="XI-9">XI-9</option>
+                        <option value="XII-1">XII-1</option>
+                        <option value="XII-2">XII-2</option>
+                        <option value="XII-3">XII-3</option>
+                        <option value="XII-4">XII-4</option>
+                        <option value="XII-5">XII-5</option>
+                        <option value="XII-6">XII-6</option>
+                        <option value="XII-7">XII-7</option>
+                        <option value="XII-8">XII-8</option>
+                        <option value="XII-9">XII-9</option>
                     </select>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg col-span-full md:col-span-1">Simpan</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Simpan</button>
                 </form>
             </div>
 
@@ -112,17 +133,42 @@
                     <input type="file" id="csvFile" accept=".csv" class="flex-1 px-4 py-2 border rounded-lg">
                     <button onclick="importCSV()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Import</button>
                 </div>
-                <p class="text-sm text-gray-600 mt-2">Format CSV: Nama,NIS,JenisKelamin(L/P),Kelas</p>
+                <p class="text-sm text-gray-600 mt-2">Format CSV: Nama,Kelas</p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex flex-col gap-4 mb-4">
+           <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                     <h3 class="text-lg font-semibold">Daftar Siswa</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-                        <select id="filterKelasDaftar" onchange="loadDaftarSiswa()" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Kelas</option>
-                        </select>
-                    </div>
+                    <select id="filterKelasDaftar" onchange="loadDaftarSiswa()" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Kelas</option>
+                        <option value="X-1">X-1</option>
+                        <option value="X-2">X-2</option>
+                        <option value="X-3">X-3</option>
+                        <option value="X-4">X-4</option>
+                        <option value="X-5">X-5</option>
+                        <option value="X-6">X-6</option>
+                        <option value="X-7">X-7</option>
+                        <option value="X-8">X-8</option>
+                        <option value="X-9">X-9</option>
+                        <option value="XI-1">XI-1</option>
+                        <option value="XI-2">XI-2</option>
+                        <option value="XI-3">XI-3</option>
+                        <option value="XI-4">XI-4</option>
+                        <option value="XI-5">XI-5</option>
+                        <option value="XI-6">XI-6</option>
+                        <option value="XI-7">XI-7</option>
+                        <option value="XI-8">XI-8</option>
+                        <option value="XI-9">XI-9</option>
+                        <option value="XII-1">XII-1</option>
+                        <option value="XII-2">XII-2</option>
+                        <option value="XII-3">XII-3</option>
+                        <option value="XII-4">XII-4</option>
+                        <option value="XII-5">XII-5</option>
+                        <option value="XII-6">XII-6</option>
+                        <option value="XII-7">XII-7</option>
+                        <option value="XII-8">XII-8</option>
+                        <option value="XII-9">XII-9</option>
+                    </select>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto">
@@ -130,8 +176,6 @@
                             <tr class="bg-gray-50">
                                 <th class="px-4 py-2 text-left">No</th>
                                 <th class="px-4 py-2 text-left">Nama</th>
-                                <th class="px-4 py-2 text-left">NIS</th>
-                                <th class="px-4 py-2 text-left">Jenis Kelamin</th>
                                 <th class="px-4 py-2 text-left">Kelas</th>
                                 <th class="px-4 py-2 text-left">Aksi</th>
                             </tr>
@@ -155,9 +199,33 @@
                     <div class="flex flex-col sm:flex-row gap-4 sm:items-center">
                         <select id="filterKelas" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                             <option value="">Pilih Kelas</option>
-                        </select>
-                        <select id="filterMapelPresensi" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Pilih Mata Pelajaran</option>
+                            <option value="X-1">X-1</option>
+                            <option value="X-2">X-2</option>
+                            <option value="X-3">X-3</option>
+                            <option value="X-4">X-4</option>
+                            <option value="X-5">X-5</option>
+                            <option value="X-6">X-6</option>
+                            <option value="X-7">X-7</option>
+                            <option value="X-8">X-8</option>
+                            <option value="X-9">X-9</option>
+                            <option value="XI-1">XI-1</option>
+                            <option value="XI-2">XI-2</option>
+                            <option value="XI-3">XI-3</option>
+                            <option value="XI-4">XI-4</option>
+                            <option value="XI-5">XI-5</option>
+                            <option value="XI-6">XI-6</option>
+                            <option value="XI-7">XI-7</option>
+                            <option value="XI-8">XI-8</option>
+                            <option value="XI-9">XI-9</option>
+                            <option value="XII-1">XII-1</option>
+                            <option value="XII-2">XII-2</option>
+                            <option value="XII-3">XII-3</option>
+                            <option value="XII-4">XII-4</option>
+                            <option value="XII-5">XII-5</option>
+                            <option value="XII-6">XII-6</option>
+                            <option value="XII-7">XII-7</option>
+                            <option value="XII-8">XII-8</option>
+                            <option value="XII-9">XII-9</option>
                         </select>
                         <input type="date" id="tanggalPresensi" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
@@ -172,12 +240,10 @@
                     <table class="w-full table-auto">
                         <thead>
                             <tr class="bg-gray-50">
-                                <th class="px-4 py-2 text-left">No</th>
+                                <th class="px-2 py-2 text-center w-1 whitespace-nowrap">No</th>
                                 <th class="px-4 py-2 text-left">Nama</th>
-                                <th class="px-4 py-2 text-left">NIS</th>
-                                <th class="px-4 py-2 text-left">Kelas</th>
-                                <th class="px-4 py-2 text-left">Mata Pelajaran</th>
-                                <th class="px-4 py-2 text-left">Status</th>
+                                <th class="px-4 py-2 text-center">Kelas</th>
+                                <th class="px-4 py-2 text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody id="daftarPresensi">
@@ -193,6 +259,32 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
                         <select id="namaMapel" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                             <option value="">Pilih Mata Pelajaran</option>
+                            <option value="Antropologi">Antropologi</option>
+                            <option value="Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)">Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)</option>
+                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                            <option value="Bahasa Indonesia Tingkat Lanjut">Bahasa Indonesia Tingkat Lanjut</option>
+                            <option value="Bahasa Inggris">Bahasa Inggris</option>
+                            <option value="Bahasa Inggris Tingkat Lanjut">Bahasa Inggris Tingkat Lanjut</option>
+                            <option value="Biologi">Biologi</option>
+                            <option value="Ekonomi">Ekonomi</option>
+                            <option value="Fisika">Fisika</option>
+                            <option value="Geografi">Geografi</option>
+                            <option value="Informatika">Informatika</option>
+                            <option value="Kimia">Kimia</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Matematika Tingkat Lanjut">Matematika Tingkat Lanjut</option>
+                            <option value="Pendidikan Agama Buddha dan Budi Pekerti">Pendidikan Agama Buddha dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Hindu dan Budi Pekerti">Pendidikan Agama Hindu dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Katolik dan Budi Pekerti">Pendidikan Agama Katolik dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Khonghucu dan Budi Pekerti">Pendidikan Agama Khonghucu dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama Kristen dan Budi Pekerti">Pendidikan Agama Kristen dan Budi Pekerti</option>
+                            <option value="Pendidikan Agama dan Budi Pekerti">Pendidikan Agama dan Budi Pekerti</option>
+                            <option value="Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)">Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
+                            <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                            <option value="Prakarya & Kewirausahaan">Prakarya & Kewirausahaan</option>
+                            <option value="Seni dan Budaya (Musik, Rupa, Tari, Teater)">Seni dan Budaya (Musik, Rupa, Tari, Teater)</option>
+                            <option value="Sosiologi">Sosiologi</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -270,16 +362,43 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="space-y-4">
-                    <div class="flex flex-col gap-4">
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <div class="flex flex-col sm:flex-row gap-4 sm:items-center">
                         <select id="filterKelasRekap" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                             <option value="">Semua Kelas</option>
+                            <option value="X-1">X-1</option>
+                            <option value="X-2">X-2</option>
+                            <option value="X-3">X-3</option>
+                            <option value="X-4">X-4</option>
+                            <option value="X-5">X-5</option>
+                            <option value="X-6">X-6</option>
+                            <option value="X-7">X-7</option>
+                            <option value="X-8">X-8</option>
+                            <option value="X-9">X-9</option>
+                            <option value="XI-1">XI-1</option>
+                            <option value="XI-2">XI-2</option>
+                            <option value="XI-3">XI-3</option>
+                            <option value="XI-4">XI-4</option>
+                            <option value="XI-5">XI-5</option>
+                            <option value="XI-6">XI-6</option>
+                            <option value="XI-7">XI-7</option>
+                            <option value="XI-8">XI-8</option>
+                            <option value="XI-9">XI-9</option>
+                            <option value="XII-1">XII-1</option>
+                            <option value="XII-2">XII-2</option>
+                            <option value="XII-3">XII-3</option>
+                            <option value="XII-4">XII-4</option>
+                            <option value="XII-5">XII-5</option>
+                            <option value="XII-6">XII-6</option>
+                            <option value="XII-7">XII-7</option>
+                            <option value="XII-8">XII-8</option>
+                            <option value="XII-9">XII-9</option>
                         </select>
                         <input type="date" id="filterTanggal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <button onclick="rekapHarian()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Rekap Harian</button>
-                        <button onclick="rekapSemuaWaktu()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">Rekap Semua Waktu</button>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button onclick="rekapHarian()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Rekap Harian</button>
+                        <button onclick="rekapSemuaWaktu()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full sm:w-auto">Rekap Semua Waktu</button>
                     </div>
                 </div>
             </div>
@@ -299,25 +418,75 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="space-y-4">
-                    <div class="flex flex-col gap-4">
-                        <input type="date" id="filterTanggalJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <select id="filterKelasJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Kelas</option>
-                        </select>
-                        <select id="filterMapelJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Semua Mata Pelajaran</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <button onclick="loadJurnal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Tampilkan</button>
-                        <button onclick="window.location.href='rekap.html'" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">📄 Download PDF</button>
-                    </div>
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <input type="date" id="filterTanggalJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <select id="filterKelasJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Kelas</option>
+                        <option value="X-1">X-1</option>
+                        <option value="X-2">X-2</option>
+                        <option value="X-3">X-3</option>
+                        <option value="X-4">X-4</option>
+                        <option value="X-5">X-5</option>
+                        <option value="X-6">X-6</option>
+                        <option value="X-7">X-7</option>
+                        <option value="X-8">X-8</option>
+                        <option value="X-9">X-9</option>
+                        <option value="XI-1">XI-1</option>
+                        <option value="XI-2">XI-2</option>
+                        <option value="XI-3">XI-3</option>
+                        <option value="XI-4">XI-4</option>
+                        <option value="XI-5">XI-5</option>
+                        <option value="XI-6">XI-6</option>
+                        <option value="XI-7">XI-7</option>
+                        <option value="XI-8">XI-8</option>
+                        <option value="XI-9">XI-9</option>
+                        <option value="XII-1">XII-1</option>
+                        <option value="XII-2">XII-2</option>
+                        <option value="XII-3">XII-3</option>
+                        <option value="XII-4">XII-4</option>
+                        <option value="XII-5">XII-5</option>
+                        <option value="XII-6">XII-6</option>
+                        <option value="XII-7">XII-7</option>
+                        <option value="XII-8">XII-8</option>
+                        <option value="XII-9">XII-9</option>
+                    </select>
+                    <select id="filterMapelJurnal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Mata Pelajaran</option>
+                        <option value="Antropologi">Antropologi</option>
+                        <option value="Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)">Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)</option>
+                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                        <option value="Bahasa Indonesia Tingkat Lanjut">Bahasa Indonesia Tingkat Lanjut</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Bahasa Inggris Tingkat Lanjut">Bahasa Inggris Tingkat Lanjut</option>
+                        <option value="Biologi">Biologi</option>
+                        <option value="Ekonomi">Ekonomi</option>
+                        <option value="Fisika">Fisika</option>
+                        <option value="Geografi">Geografi</option>
+                        <option value="Informatika">Informatika</option>
+                        <option value="Kimia">Kimia</option>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Matematika Tingkat Lanjut">Matematika Tingkat Lanjut</option>
+                        <option value="Pendidikan Agama Buddha dan Budi Pekerti">Pendidikan Agama Buddha dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Hindu dan Budi Pekerti">Pendidikan Agama Hindu dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Katolik dan Budi Pekerti">Pendidikan Agama Katolik dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Khonghucu dan Budi Pekerti">Pendidikan Agama Khonghucu dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Kristen dan Budi Pekerti">Pendidikan Agama Kristen dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama dan Budi Pekerti">Pendidikan Agama dan Budi Pekerti</option>
+                        <option value="Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)">Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
+                        <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                        <option value="Prakarya & Kewirausahaan">Prakarya & Kewirausahaan</option>
+                        <option value="Seni dan Budaya (Musik, Rupa, Tari, Teater)">Seni dan Budaya (Musik, Rupa, Tari, Teater)</option>
+                        <option value="Sosiologi">Sosiologi</option>
+                    </select>
+                    <button onclick="loadJurnal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Tampilkan</button>
+                    <button onclick="downloadJurnalPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">📄 Download PDF</button>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="overflow-x-auto">
+           <div class="bg-white rounded-xl shadow-lg p-6">
+                <!-- Desktop Table -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full table-auto">
                         <thead>
                             <tr class="bg-gray-50">
@@ -339,6 +508,10 @@
                         <tbody id="daftarJurnal">
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Mobile Cards -->
+                <div class="md:hidden space-y-4" id="daftarJurnalMobile">
                 </div>
             </div>
         </div>
@@ -363,14 +536,35 @@
             <form id="formEditSiswa" class="space-y-4">
                 <input type="hidden" id="editSiswaId">
                 <input type="text" id="editNamaSiswa" placeholder="Nama Siswa" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                <input type="text" id="editNisSiswa" placeholder="NIS (Nomor Induk Siswa)" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                <select id="editJenisKelaminSiswa" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                    <option value="">Pilih Jenis Kelamin</option>
-                    <option value="L">Laki-laki</option>
-                    <option value="P">Perempuan</option>
-                </select>
                 <select id="editKelasSiswa" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Pilih Kelas</option>
+                    <option value="X-1">X-1</option>
+                    <option value="X-2">X-2</option>
+                    <option value="X-3">X-3</option>
+                    <option value="X-4">X-4</option>
+                    <option value="X-5">X-5</option>
+                    <option value="X-6">X-6</option>
+                    <option value="X-7">X-7</option>
+                    <option value="X-8">X-8</option>
+                    <option value="X-9">X-9</option>
+                    <option value="XI-1">XI-1</option>
+                    <option value="XI-2">XI-2</option>
+                    <option value="XI-3">XI-3</option>
+                    <option value="XI-4">XI-4</option>
+                    <option value="XI-5">XI-5</option>
+                    <option value="XI-6">XI-6</option>
+                    <option value="XI-7">XI-7</option>
+                    <option value="XI-8">XI-8</option>
+                    <option value="XI-9">XI-9</option>
+                    <option value="XII-1">XII-1</option>
+                    <option value="XII-2">XII-2</option>
+                    <option value="XII-3">XII-3</option>
+                    <option value="XII-4">XII-4</option>
+                    <option value="XII-5">XII-5</option>
+                    <option value="XII-6">XII-6</option>
+                    <option value="XII-7">XII-7</option>
+                    <option value="XII-8">XII-8</option>
+                    <option value="XII-9">XII-9</option>
                 </select>
                 <div class="flex gap-4">
                     <button type="button" onclick="closeModal()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg">Batal</button>
@@ -390,12 +584,65 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
                     <select id="editNamaMapel" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         <option value="">Pilih Mata Pelajaran</option>
+                        <option value="Antropologi">Antropologi</option>
+                        <option value="Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)">Bahasa Asing (Arab, Jepang, Mandarin, Korea, Jerman, Prancis, dll.)</option>
+                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                        <option value="Bahasa Indonesia Tingkat Lanjut">Bahasa Indonesia Tingkat Lanjut</option>
+                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                        <option value="Bahasa Inggris Tingkat Lanjut">Bahasa Inggris Tingkat Lanjut</option>
+                        <option value="Biologi">Biologi</option>
+                        <option value="Ekonomi">Ekonomi</option>
+                        <option value="Fisika">Fisika</option>
+                        <option value="Geografi">Geografi</option>
+                        <option value="Informatika">Informatika</option>
+                        <option value="Kimia">Kimia</option>
+                        <option value="Matematika">Matematika</option>
+                        <option value="Matematika Tingkat Lanjut">Matematika Tingkat Lanjut</option>
+                        <option value="Pendidikan Agama Buddha dan Budi Pekerti">Pendidikan Agama Buddha dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Hindu dan Budi Pekerti">Pendidikan Agama Hindu dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Katolik dan Budi Pekerti">Pendidikan Agama Katolik dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Khonghucu dan Budi Pekerti">Pendidikan Agama Khonghucu dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama Kristen dan Budi Pekerti">Pendidikan Agama Kristen dan Budi Pekerti</option>
+                        <option value="Pendidikan Agama dan Budi Pekerti">Pendidikan Agama dan Budi Pekerti</option>
+                        <option value="Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)">Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)</option>
+                        <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                        <option value="Prakarya & Kewirausahaan">Prakarya & Kewirausahaan</option>
+                        <option value="Seni dan Budaya (Musik, Rupa, Tari, Teater)">Seni dan Budaya (Musik, Rupa, Tari, Teater)</option>
+                        <option value="Sosiologi">Sosiologi</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
                     <select id="editKelasJurnal" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
                         <option value="">Pilih Kelas</option>
+                        <option value="X-1">X-1</option>
+                        <option value="X-2">X-2</option>
+                        <option value="X-3">X-3</option>
+                        <option value="X-4">X-4</option>
+                        <option value="X-5">X-5</option>
+                        <option value="X-6">X-6</option>
+                        <option value="X-7">X-7</option>
+                        <option value="X-8">X-8</option>
+                        <option value="X-9">X-9</option>
+                        <option value="XI-1">XI-1</option>
+                        <option value="XI-2">XI-2</option>
+                        <option value="XI-3">XI-3</option>
+                        <option value="XI-4">XI-4</option>
+                        <option value="XI-5">XI-5</option>
+                        <option value="XI-6">XI-6</option>
+                        <option value="XI-7">XI-7</option>
+                        <option value="XI-8">XI-8</option>
+                        <option value="XI-9">XI-9</option>
+                        <option value="XII-1">XII-1</option>
+                        <option value="XII-2">XII-2</option>
+                        <option value="XII-3">XII-3</option>
+                        <option value="XII-4">XII-4</option>
+                        <option value="XII-5">XII-5</option>
+                        <option value="XII-6">XII-6</option>
+                        <option value="XII-7">XII-7</option>
+                        <option value="XII-8">XII-8</option>
+                        <option value="XII-9">XII-9</option>
                     </select>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -480,75 +727,11 @@
         let presensiData = [];
         let jurnalData = [];
         let currentUser = null;
-        let mapelData = [];
-
-        // Class options
-        const kelasOptions = [
-            'X-1', 'X-2', 'X-3', 'X-4', 'X-5', 'X-6', 'X-7', 'X-8', 'X-9',
-            'XI-1', 'XI-2', 'XI-3', 'XI-4', 'XI-5', 'XI-6', 'XI-7', 'XI-8', 'XI-9',
-            'XII-1', 'XII-2', 'XII-3', 'XII-4', 'XII-5', 'XII-6', 'XII-7', 'XII-8', 'XII-9'
-        ];
 
         // Database Functions
-        async function initializeDatabase() {
-            try {
-                console.log('Initializing database tables...');
-                await createTablesIfNotExist();
-                console.log('Database initialization completed');
-                return true;
-            } catch (error) {
-                console.error('Database initialization failed:', error);
-                throw error;
-            }
-        }
-
-        async function createTablesIfNotExist() {
-            try {
-                // Test if tables exist by trying to query them
-                const { data: testSiswa, error: siswaError } = await supabaseClient
-                    .from('siswa')
-                    .select('id')
-                    .limit(1);
-                
-                const { data: testPresensi, error: presensiError } = await supabaseClient
-                    .from('presensi')
-                    .select('id')
-                    .limit(1);
-                
-                const { data: testJurnal, error: jurnalError } = await supabaseClient
-                    .from('jurnal')
-                    .select('id')
-                    .limit(1);
-                
-                const { data: testUsers, error: usersError } = await supabaseClient
-                    .from('users')
-                    .select('id')
-                    .limit(1);
-                
-                const { data: testMapel, error: mapelError } = await supabaseClient
-                    .from('mapel')
-                    .select('id')
-                    .limit(1);
-                
-                // Check for errors
-                const errors = [siswaError, presensiError, jurnalError, usersError, mapelError];
-                const hasError = errors.some(error => error);
-                
-                if (hasError) {
-                    console.error('Database access errors:', errors);
-                    throw new Error('Database tables are not accessible');
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Error checking tables:', error);
-                throw error;
-            }
-        }
-
         async function loadAllData() {
             try {
-                // Load siswa data with new fields
+                // Load siswa data
                 const { data: siswa, error: siswaError } = await supabaseClient
                     .from('siswa')
                     .select('*')
@@ -556,142 +739,50 @@
                 if (siswaError) throw siswaError;
                 siswaData = siswa || [];
 
-                // Load presensi data with guru filter
-                let presensiQuery = supabaseClient
+                // Load presensi data
+                const { data: presensi, error: presensiError } = await supabaseClient
                     .from('presensi')
                     .select('*')
                     .order('tanggal', { ascending: false });
-                
-                if (currentUser && currentUser.role === 'teacher') {
-                    presensiQuery = presensiQuery.eq('guru_id', currentUser.id);
-                }
-                
-                const { data: presensi, error: presensiError } = await presensiQuery;
                 if (presensiError) throw presensiError;
                 presensiData = presensi || [];
 
                 // Load jurnal data
-                let jurnalQuery = supabaseClient
+                const { data: jurnal, error: jurnalError } = await supabaseClient
                     .from('jurnal')
                     .select('*')
                     .order('tanggal', { ascending: false });
-                
-                if (currentUser && currentUser.role === 'teacher') {
-                    jurnalQuery = jurnalQuery.eq('guru_id', currentUser.id);
-                }
-                
-                const { data: jurnal, error: jurnalError } = await jurnalQuery;
                 if (jurnalError) throw jurnalError;
                 jurnalData = jurnal || [];
 
                 console.log('Data loaded successfully from database');
             } catch (error) {
                 console.error('Error loading data:', error);
-                throw error;
+                showAlert('Gagal memuat data dari server', 'error');
             }
         }
 
         async function authenticateUser(username, password) {
             try {
-                console.log('Attempting to authenticate user:', username);
-                
-                // Try database authentication first
-                const { data: users, error } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('users')
-                    .select('id, username, nama_lengkap, role, mapel, is_active')
+                    .select('*')
                     .eq('username', username)
                     .eq('password', password)
                     .eq('is_active', true)
-                    .limit(1);
+                    .single();
                 
                 if (error) {
-                    console.log('Database authentication failed, using fallback:', error);
-                    // Fallback to hardcoded users
-                    const validUsers = [
-                        {
-                            id: 'admin-001',
-                            username: 'admin',
-                            password: 'admin123',
-                            nama_lengkap: 'Administrator',
-                            role: 'admin',
-                            mapel: null,
-                            is_active: true
-                        },
-                        {
-                            id: 'guru-001',
-                            username: 'guru1',
-                            password: 'guru123',
-                            nama_lengkap: 'Guru Matematika',
-                            role: 'teacher',
-                            mapel: 'Matematika',
-                            is_active: true
-                        },
-                        {
-                            id: 'guru-002',
-                            username: 'guru2',
-                            password: 'guru123',
-                            nama_lengkap: 'Guru Bahasa Indonesia',
-                            role: 'teacher',
-                            mapel: 'Bahasa Indonesia',
-                            is_active: true
-                        }
-                    ];
-                    
-                    const user = validUsers.find(u => 
-                        u.username === username && 
-                        u.password === password && 
-                        u.is_active === true
-                    );
-                    
-                    return user || null;
+                    if (error.code === 'PGRST116') {
+                        return null; // No matching user found
+                    }
+                    throw error;
                 }
                 
-                if (users && users.length > 0) {
-                    console.log('Database authentication successful');
-                    return users[0];
-                }
-                
-                return null;
+                return data;
             } catch (error) {
                 console.error('Error authenticating user:', error);
-                // Fallback authentication
-                const validUsers = [
-                    {
-                        id: 'admin-001',
-                        username: 'admin',
-                        password: 'admin123',
-                        nama_lengkap: 'Administrator',
-                        role: 'admin',
-                        mapel: null,
-                        is_active: true
-                    },
-                    {
-                        id: 'guru-001',
-                        username: 'guru1',
-                        password: 'guru123',
-                        nama_lengkap: 'Guru Matematika',
-                        role: 'teacher',
-                        mapel: 'Matematika',
-                        is_active: true
-                    },
-                    {
-                        id: 'guru-002',
-                        username: 'guru2',
-                        password: 'guru123',
-                        nama_lengkap: 'Guru Bahasa Indonesia',
-                        role: 'teacher',
-                        mapel: 'Bahasa Indonesia',
-                        is_active: true
-                    }
-                ];
-                
-                const user = validUsers.find(u => 
-                    u.username === username && 
-                    u.password === password && 
-                    u.is_active === true
-                );
-                
-                return user || null;
+                throw error;
             }
         }
 
@@ -739,21 +830,11 @@
 
         async function savePresensi(presensi) {
             try {
-                console.log('Attempting to save presensi:', presensi);
-                
                 const { data, error } = await supabaseClient
                     .from('presensi')
-                    .upsert([presensi], {
-                        onConflict: 'siswa_id,tanggal,mapel_id,guru_id',
-                        ignoreDuplicates: false
-                    })
+                    .upsert([presensi])
                     .select();
-                
-                if (error) {
-                    throw error;
-                }
-                
-                console.log('Presensi saved successfully:', data);
+                if (error) throw error;
                 return data[0];
             } catch (error) {
                 console.error('Error saving presensi:', error);
@@ -763,18 +844,11 @@
 
         async function saveJurnal(jurnal) {
             try {
-                console.log('Attempting to save jurnal:', jurnal);
-                
                 const { data, error } = await supabaseClient
                     .from('jurnal')
                     .insert([jurnal])
                     .select();
-                
-                if (error) {
-                    throw error;
-                }
-                
-                console.log('Jurnal saved successfully:', data);
+                if (error) throw error;
                 return data[0];
             } catch (error) {
                 console.error('Error saving jurnal:', error);
@@ -810,166 +884,6 @@
             }
         }
 
-        // Load mapel options
-        async function loadMapelOptions() {
-            try {
-                console.log('Loading mapel options from database...');
-                
-                await createDefaultMapelData();
-                
-                const { data: mapelList, error: mapelError } = await supabaseClient
-                    .from('mapel')
-                    .select('id, nama_mapel')
-                    .order('nama_mapel');
-                
-                if (mapelError) {
-                    console.error('Mapel query error:', mapelError);
-                    console.log('Creating fallback mapel data...');
-                    createFallbackMapelData();
-                    return;
-                }
-                
-                console.log('Mapel data loaded:', mapelList);
-                mapelData = mapelList || [];
-
-                if (mapelData.length === 0) {
-                    console.warn('No mapel data returned from database, creating fallback data');
-                    createFallbackMapelData();
-                    return;
-                }
-
-                populateMapelDropdowns();
-                console.log('Mapel options loaded successfully');
-                showAlert(`${mapelData.length} mata pelajaran berhasil dimuat`, 'success');
-
-            } catch (error) {
-                console.error('Error loading mapel options:', error);
-                console.log('Creating fallback mapel data due to error...');
-                createFallbackMapelData();
-            }
-        }
-
-        async function createDefaultMapelData() {
-            try {
-                const { data: existingMapel, error: checkError } = await supabaseClient
-                    .from('mapel')
-                    .select('id')
-                    .limit(1);
-                
-                if (checkError) {
-                    console.log('Mapel table might not exist or accessible:', checkError);
-                    return;
-                }
-                
-                if (!existingMapel || existingMapel.length === 0) {
-                    console.log('Mapel table is empty, creating default data...');
-                    
-                    const defaultMapel = [
-                        { nama_mapel: 'Matematika' },
-                        { nama_mapel: 'Bahasa Indonesia' },
-                        { nama_mapel: 'Bahasa Inggris' },
-                        { nama_mapel: 'IPA' },
-                        { nama_mapel: 'IPS' },
-                        { nama_mapel: 'PKn' },
-                        { nama_mapel: 'Seni Budaya' },
-                        { nama_mapel: 'Pendidikan Jasmani' },
-                        { nama_mapel: 'Prakarya' },
-                        { nama_mapel: 'Agama' }
-                    ];
-                    
-                    const { data: insertedMapel, error: insertError } = await supabaseClient
-                        .from('mapel')
-                        .insert(defaultMapel)
-                        .select();
-                    
-                    if (insertError) {
-                        console.error('Error inserting default mapel:', insertError);
-                    } else {
-                        console.log('Default mapel data created successfully:', insertedMapel);
-                    }
-                }
-            } catch (error) {
-                console.error('Error creating default mapel data:', error);
-            }
-        }
-
-        function createFallbackMapelData() {
-            console.log('Using fallback mapel data...');
-            mapelData = [
-                { id: 1, nama_mapel: 'Matematika' },
-                { id: 2, nama_mapel: 'Bahasa Indonesia' },
-                { id: 3, nama_mapel: 'Bahasa Inggris' },
-                { id: 4, nama_mapel: 'IPA' },
-                { id: 5, nama_mapel: 'IPS' },
-                { id: 6, nama_mapel: 'PKn' },
-                { id: 7, nama_mapel: 'Seni Budaya' },
-                { id: 8, nama_mapel: 'Pendidikan Jasmani' },
-                { id: 9, nama_mapel: 'Prakarya' },
-                { id: 10, nama_mapel: 'Agama' }
-            ];
-            
-            populateMapelDropdowns();
-            showAlert(`${mapelData.length} mata pelajaran dimuat (mode offline)`, 'success');
-        }
-
-        function populateMapelDropdowns() {
-            const mapelSelects = ['filterMapelPresensi', 'namaMapel', 'filterMapelJurnal', 'editNamaMapel'];
-            mapelSelects.forEach(selectId => {
-                const select = document.getElementById(selectId);
-                if (select) {
-                    console.log(`Populating dropdown: ${selectId} with ${mapelData.length} options`);
-                    
-                    const firstOption = select.querySelector('option');
-                    const defaultText = firstOption ? firstOption.textContent : 'Pilih Mata Pelajaran';
-                    const defaultValue = firstOption ? firstOption.value : '';
-                    
-                    select.innerHTML = '';
-                    
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = defaultValue;
-                    defaultOption.textContent = defaultText;
-                    select.appendChild(defaultOption);
-                    
-                    mapelData.forEach(mapel => {
-                        const option = document.createElement('option');
-                        option.value = mapel.id;
-                        option.textContent = mapel.nama_mapel;
-                        select.appendChild(option);
-                    });
-                    console.log(`Successfully added ${mapelData.length} mapel options to ${selectId}`);
-                } else {
-                    console.error(`Dropdown element not found: ${selectId}`);
-                }
-            });
-        }
-
-        function populateKelasDropdowns() {
-            const kelasSelects = ['kelasSiswa', 'editKelasSiswa', 'filterKelas', 'filterKelasDaftar', 'filterKelasRekap', 'filterKelasJurnal', 'editKelasJurnal'];
-            
-            kelasSelects.forEach(selectId => {
-                const select = document.getElementById(selectId);
-                if (select) {
-                    const firstOption = select.querySelector('option');
-                    const defaultText = firstOption ? firstOption.textContent : 'Pilih Kelas';
-                    const defaultValue = firstOption ? firstOption.value : '';
-                    
-                    select.innerHTML = '';
-                    
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = defaultValue;
-                    defaultOption.textContent = defaultText;
-                    select.appendChild(defaultOption);
-                    
-                    kelasOptions.forEach(kelas => {
-                        const option = document.createElement('option');
-                        option.value = kelas;
-                        option.textContent = kelas;
-                        select.appendChild(option);
-                    });
-                }
-            });
-        }
-
         // Set tanggal hari ini dan load data
         document.addEventListener('DOMContentLoaded', async function() {
             const today = new Date().toISOString().split('T')[0];
@@ -977,34 +891,18 @@
             document.getElementById('filterTanggal').value = today;
             document.getElementById('filterTanggalJurnal').value = today;
             
-            console.log('Initializing application...');
-            await initializeDatabase();
-            
-            // Populate kelas dropdowns
-            populateKelasDropdowns();
-            
+            // Check for existing session
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
-                
-                let userInfoText = `Selamat datang, ${currentUser.nama_lengkap} (${currentUser.role})`;
-                if (currentUser.mapel && currentUser.role === 'teacher') {
-                    userInfoText += ` - ${currentUser.mapel}`;
-                }
-                
-                document.getElementById('userInfo').textContent = userInfoText;
-                updateMenuVisibility();
-                
+                document.getElementById('userInfo').textContent = `Selamat datang, ${currentUser.nama_lengkap} (${currentUser.role})`;
                 await loadAllData();
-                await loadMapelOptions();
             } else {
+                // Load data even if not logged in (for login validation)
                 await loadAllData();
-                await loadMapelOptions();
             }
-            
-            showAlert('Aplikasi berhasil terhubung ke database.', 'success');
         });
 
         // Login Function
@@ -1022,14 +920,7 @@
                     
                     document.getElementById('loginPage').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
-                    
-                    let userInfoText = `Selamat datang, ${user.nama_lengkap} (${user.role})`;
-                    if (user.mapel && user.role === 'teacher') {
-                        userInfoText += ` - ${user.mapel}`;
-                    }
-                    document.getElementById('userInfo').textContent = userInfoText;
-                    
-                    updateMenuVisibility();
+                    document.getElementById('userInfo').textContent = `Selamat datang, ${user.nama_lengkap} (${user.role})`;
                     
                     showAlert('Login berhasil!', 'success');
                     await loadAllData();
@@ -1042,6 +933,7 @@
             }
         });
 
+        // Logout Function
         function logout() {
             currentUser = null;
             localStorage.removeItem('currentUser');
@@ -1052,30 +944,25 @@
             document.getElementById('userInfo').textContent = '';
         }
 
-        function updateMenuVisibility() {
-            const menuManajemenSiswa = document.getElementById('menuManajemenSiswa');
-            
-            if (currentUser && currentUser.role === 'teacher') {
-                menuManajemenSiswa.style.display = 'none';
-            } else {
-                menuManajemenSiswa.style.display = 'block';
-            }
-        }
-
+        // Show Page Function
         function showPage(pageId) {
+            // Hide all pages
             const pages = ['mainMenu', 'manajemenSiswa', 'inputPresensi', 'rekapPresensi', 'rekapJurnal'];
             pages.forEach(page => {
                 document.getElementById(page).classList.add('hidden');
             });
             
+            // Show selected page
             document.getElementById(pageId).classList.remove('hidden');
             document.getElementById(pageId).classList.add('fade-in');
             
+            // Load data for specific pages
             if (pageId === 'manajemenSiswa') {
-                
+                loadDaftarSiswa();
             }
         }
 
+        // Alert Function
         function showAlert(message, type = 'info') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg text-white font-semibold slide-up ${
@@ -1094,15 +981,11 @@
         document.getElementById('formTambahSiswa').addEventListener('submit', async function(e) {
             e.preventDefault();
             const nama = document.getElementById('namaSiswa').value;
-            const nis = document.getElementById('nisSiswa').value;
-            const jenisKelamin = document.getElementById('jenisKelaminSiswa').value;
             const kelas = document.getElementById('kelasSiswa').value;
             
             try {
                 const siswa = {
                     nama: nama,
-                    nis: nis,
-                    jenis_kelamin: jenisKelamin,
                     kelas: kelas
                 };
                 
@@ -1117,16 +1000,15 @@
             }
         });
 
-        async function loadDaftarSiswa() {
+        function loadDaftarSiswa() {
             const tbody = document.getElementById('daftarSiswa');
             tbody.innerHTML = '';
             
             const filterKelas = document.getElementById('filterKelasDaftar').value;
-            
             let filteredSiswa = siswaData;
             
             if (filterKelas) {
-                filteredSiswa = filteredSiswa.filter(s => s.kelas === filterKelas);
+                filteredSiswa = siswaData.filter(s => s.kelas === filterKelas);
             }
             
             filteredSiswa.forEach((siswa, index) => {
@@ -1135,8 +1017,6 @@
                 row.innerHTML = `
                     <td class="px-4 py-2">${index + 1}</td>
                     <td class="px-4 py-2">${siswa.nama}</td>
-                    <td class="px-4 py-2">${siswa.nis || '-'}</td>
-                    <td class="px-4 py-2">${siswa.jenis_kelamin === 'L' ? 'Laki-laki' : siswa.jenis_kelamin === 'P' ? 'Perempuan' : '-'}</td>
                     <td class="px-4 py-2">${siswa.kelas}</td>
                     <td class="px-4 py-2">
                         <button onclick="editSiswa(${siswa.id})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm mr-2">Edit</button>
@@ -1152,8 +1032,6 @@
             if (siswa) {
                 document.getElementById('editSiswaId').value = siswa.id;
                 document.getElementById('editNamaSiswa').value = siswa.nama;
-                document.getElementById('editNisSiswa').value = siswa.nis || '';
-                document.getElementById('editJenisKelaminSiswa').value = siswa.jenis_kelamin || '';
                 document.getElementById('editKelasSiswa').value = siswa.kelas;
                 document.getElementById('modalEditSiswa').classList.remove('hidden');
             }
@@ -1163,22 +1041,16 @@
             e.preventDefault();
             const id = parseInt(document.getElementById('editSiswaId').value);
             const nama = document.getElementById('editNamaSiswa').value;
-            const nis = document.getElementById('editNisSiswa').value;
-            const jenisKelamin = document.getElementById('editJenisKelaminSiswa').value;
             const kelas = document.getElementById('editKelasSiswa').value;
             
             try {
-                const siswaUpdate = { 
-                    nama, 
-                    nis,
-                    jenis_kelamin: jenisKelamin,
-                    kelas
-                };
+                const siswaUpdate = { nama, kelas };
                 await updateSiswa(id, siswaUpdate);
                 
                 const index = siswaData.findIndex(s => s.id === id);
                 if (index !== -1) {
-                    Object.assign(siswaData[index], siswaUpdate);
+                    siswaData[index].nama = nama;
+                    siswaData[index].kelas = kelas;
                 }
                 
                 showAlert('Data berhasil diperbarui!', 'success');
@@ -1218,15 +1090,13 @@
                 let imported = 0;
                 
                 try {
-                    for (let i = 1; i < lines.length; i++) {
+                    for (let i = 1; i < lines.length; i++) { // Skip header
                         const line = lines[i].trim();
                         if (line) {
-                            const [nama, nis, jenisKelamin, kelas] = line.split(',');
-                            if (nama && nis && jenisKelamin && kelas) {
+                            const [nama, kelas] = line.split(',');
+                            if (nama && kelas) {
                                 const siswa = {
                                     nama: nama.trim(),
-                                    nis: nis.trim(),
-                                    jenis_kelamin: jenisKelamin.trim(),
                                     kelas: kelas.trim()
                                 };
                                 const savedSiswa = await saveSiswa(siswa);
@@ -1249,16 +1119,12 @@
         // Input Presensi Functions
         function loadPresensi() {
             const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('filterMapelPresensi').value;
             const tanggal = document.getElementById('tanggalPresensi').value;
             
-            if (!kelas || !mapelId || !tanggal) {
-                showAlert('Pilih kelas, mata pelajaran, dan tanggal terlebih dahulu!', 'error');
+            if (!kelas || !tanggal) {
+                showAlert('Pilih kelas dan tanggal terlebih dahulu!', 'error');
                 return;
             }
-            
-            const mapelObj = mapelData.find(m => m.id == mapelId);
-            const mapelName = mapelObj ? mapelObj.nama_mapel : '';
             
             const siswaKelas = siswaData.filter(s => s.kelas === kelas);
             const container = document.getElementById('daftarPresensi');
@@ -1266,20 +1132,18 @@
             
             siswaKelas.forEach((siswa, index) => {
                 const existingPresensi = presensiData.find(p => 
-                    p.siswa_id === siswa.id && p.tanggal === tanggal && p.mapel_id == mapelId && p.guru_id == currentUser.id
+                    p.siswa_id === siswa.id && p.tanggal === tanggal
                 );
                 
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
                 row.innerHTML = `
-                    <td class="px-4 py-2">${index + 1}</td>
+                    <td class="px-2 py-2 text-center">${index + 1}</td>
                     <td class="px-4 py-2 font-medium">${siswa.nama}</td>
-                    <td class="px-4 py-2">${siswa.nis || '-'}</td>
                     <td class="px-4 py-2">${siswa.kelas}</td>
-                    <td class="px-4 py-2">${mapelName}</td>
                     <td class="px-4 py-2">
                         <select class="px-3 py-1 border rounded focus:ring-2 focus:ring-blue-500" 
-                                onchange="updatePresensi(${siswa.id}, '${tanggal}', ${mapelId}, this.value)">
+                                onchange="updatePresensi(${siswa.id}, '${tanggal}', this.value)">
                             <option value="Hadir" ${existingPresensi?.status === 'Hadir' ? 'selected' : ''}>Hadir</option>
                             <option value="Ijin" ${existingPresensi?.status === 'Ijin' ? 'selected' : ''}>Ijin</option>
                             <option value="Sakit" ${existingPresensi?.status === 'Sakit' ? 'selected' : ''}>Sakit</option>
@@ -1294,12 +1158,10 @@
             updateJurnalStats();
         }
 
-        function updatePresensi(siswaId, tanggal, mapelId, status) {
+        function updatePresensi(siswaId, tanggal, status) {
+            // Update local data only, don't save to database yet
             const existingIndex = presensiData.findIndex(p => 
-                p.siswa_id === siswaId && 
-                p.tanggal === tanggal && 
-                p.mapel_id == mapelId && 
-                p.guru_id == currentUser.id
+                p.siswa_id === siswaId && p.tanggal === tanggal
             );
             
             if (existingIndex !== -1) {
@@ -1308,10 +1170,7 @@
                 presensiData.push({
                     siswa_id: siswaId,
                     tanggal: tanggal,
-                    mapel_id: parseInt(mapelId),
-                    guru_id: currentUser.id,
-                    status: status,
-                    kelas: document.getElementById('filterKelas').value
+                    status: status
                 });
             }
             
@@ -1320,91 +1179,43 @@
 
         async function saveAllPresensi() {
             const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('filterMapelPresensi').value;
             const tanggal = document.getElementById('tanggalPresensi').value;
             
-            if (!kelas || !mapelId || !tanggal) {
-                showAlert('Pilih kelas, mata pelajaran, dan tanggal terlebih dahulu!', 'error');
-                return;
-            }
-            
-            if (!currentUser || !currentUser.id) {
-                showAlert('Sesi login tidak valid. Silakan login ulang!', 'error');
+            if (!kelas || !tanggal) {
+                showAlert('Pilih kelas dan tanggal terlebih dahulu!', 'error');
                 return;
             }
             
             try {
                 const siswaKelas = siswaData.filter(s => s.kelas === kelas);
+                const presensiHariIni = presensiData.filter(p => p.tanggal === tanggal);
                 
-                if (siswaKelas.length === 0) {
-                    showAlert('Tidak ada siswa di kelas yang dipilih!', 'error');
-                    return;
-                }
-                
-                let savedCount = 0;
-                let errorCount = 0;
-                
-                const presensiSelects = document.querySelectorAll('#daftarPresensi select');
-                const presensiToSave = [];
-                
-                siswaKelas.forEach((siswa, index) => {
-                    const selectElement = presensiSelects[index];
-                    if (selectElement) {
-                        const status = selectElement.value;
-                        presensiToSave.push({
-                            siswa_id: siswa.id,
-                            tanggal: tanggal,
-                            mapel_id: parseInt(mapelId),
-                            guru_id: currentUser.id,
-                            status: status,
-                            kelas: kelas
-                        });
-                    }
-                });
-                
-                console.log('Saving presensi data:', presensiToSave);
-                
-                for (const presensiRecord of presensiToSave) {
-                    try {
-                        await savePresensi(presensiRecord);
-                        savedCount++;
-                    } catch (error) {
-                        console.error('Error saving individual presensi:', error);
-                        errorCount++;
+                for (const siswa of siswaKelas) {
+                    const presensi = presensiHariIni.find(p => p.siswa_id === siswa.id);
+                    if (presensi) {
+                        await savePresensi(presensi);
                     }
                 }
                 
-                if (savedCount > 0) {
-                    showAlert(`${savedCount} presensi berhasil disimpan!`, 'success');
-                    await loadAllData();
-                } else {
-                    showAlert('Tidak ada presensi yang berhasil disimpan!', 'error');
-                }
-                
-                if (errorCount > 0) {
-                    showAlert(`${errorCount} presensi gagal disimpan!`, 'error');
-                }
-                
+                showAlert('Semua presensi berhasil disimpan!', 'success');
             } catch (error) {
-                console.error('Error in saveAllPresensi:', error);
-                showAlert(`Gagal menyimpan presensi: ${error.message}`, 'error');
+                showAlert('Gagal menyimpan presensi!', 'error');
             }
         }
 
         function setSemuaHadir() {
             const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('filterMapelPresensi').value;
             const tanggal = document.getElementById('tanggalPresensi').value;
             
-            if (!kelas || !mapelId || !tanggal) {
-                showAlert('Pilih kelas, mata pelajaran, dan tanggal terlebih dahulu!', 'error');
+            if (!kelas || !tanggal) {
+                showAlert('Pilih kelas dan tanggal terlebih dahulu!', 'error');
                 return;
             }
             
             const siswaKelas = siswaData.filter(s => s.kelas === kelas);
             
             siswaKelas.forEach(siswa => {
-                updatePresensi(siswa.id, tanggal, mapelId, 'Hadir');
+                updatePresensi(siswa.id, tanggal, 'Hadir');
             });
             
             loadPresensi();
@@ -1413,15 +1224,12 @@
 
         function updateJurnalStats() {
             const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('filterMapelPresensi').value;
             const tanggal = document.getElementById('tanggalPresensi').value;
             
-            if (!kelas || !mapelId || !tanggal) return;
+            if (!kelas || !tanggal) return;
             
             const siswaKelas = siswaData.filter(s => s.kelas === kelas);
-            const presensiHariIni = presensiData.filter(p => 
-                p.tanggal === tanggal && p.mapel_id == mapelId && p.guru_id == currentUser.id
-            );
+            const presensiHariIni = presensiData.filter(p => p.tanggal === tanggal);
             
             let hadir = 0;
             let tidakHadir = 0;
@@ -1441,63 +1249,36 @@
             document.getElementById('jumlahHadir').value = hadir;
             document.getElementById('jumlahTidakHadir').value = tidakHadir;
             document.getElementById('namaTidakHadir').value = namaTidakHadir.join(', ');
-            
-            document.getElementById('namaMapel').value = mapelId;
         }
+
+
 
         // Jurnal Functions
         document.getElementById('formJurnal').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if (!currentUser || !currentUser.id) {
-                showAlert('Sesi login tidak valid. Silakan login ulang!', 'error');
-                return;
-            }
-            
-            const tanggal = document.getElementById('tanggalPresensi').value;
-            const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('namaMapel').value;
-            const jamAwal = document.getElementById('jamAwal').value;
-            const jamAkhir = document.getElementById('jamAkhir').value;
-            const kegiatan = document.getElementById('kegiatan').value;
-            const materi = document.getElementById('materi').value;
-            
-            if (!tanggal || !kelas || !mapelId || !jamAwal || !jamAkhir || !kegiatan || !materi) {
-                showAlert('Semua field wajib harus diisi!', 'error');
-                return;
-            }
-            
             try {
                 const jurnal = {
-                    tanggal: tanggal,
-                    kelas: kelas,
-                    mapel_id: parseInt(mapelId),
-                    jam_awal: parseInt(jamAwal),
-                    jam_akhir: parseInt(jamAkhir),
-                    jumlah_hadir: parseInt(document.getElementById('jumlahHadir').value) || 0,
-                    jumlah_tidak_hadir: parseInt(document.getElementById('jumlahTidakHadir').value) || 0,
-                    nama_tidak_hadir: document.getElementById('namaTidakHadir').value || '',
-                    kegiatan: kegiatan,
-                    materi: materi,
-                    keterangan: document.getElementById('keterangan').value || '',
-                    guru_id: currentUser.id
+                    tanggal: document.getElementById('tanggalPresensi').value,
+                    kelas: document.getElementById('filterKelas').value,
+                    mapel: document.getElementById('namaMapel').value,
+                    jam_awal: document.getElementById('jamAwal').value,
+                    jam_akhir: document.getElementById('jamAkhir').value,
+                    jumlah_hadir: document.getElementById('jumlahHadir').value,
+                    jumlah_tidak_hadir: document.getElementById('jumlahTidakHadir').value,
+                    nama_tidak_hadir: document.getElementById('namaTidakHadir').value,
+                    kegiatan: document.getElementById('kegiatan').value,
+                    materi: document.getElementById('materi').value,
+                    keterangan: document.getElementById('keterangan').value
                 };
-                
-                console.log('Saving jurnal data:', jurnal);
                 
                 const savedJurnal = await saveJurnal(jurnal);
                 jurnalData.push(savedJurnal);
                 
-                showAlert('Jurnal berhasil disimpan!', 'success');
+                showAlert('Data berhasil disimpan!', 'success');
                 document.getElementById('formJurnal').reset();
-                
-                document.getElementById('jumlahHadir').value = '';
-                document.getElementById('jumlahTidakHadir').value = '';
-                document.getElementById('namaTidakHadir').value = '';
-                
             } catch (error) {
-                console.error('Error saving jurnal:', error);
-                showAlert(`Gagal menyimpan jurnal: ${error.message}`, 'error');
+                showAlert('Gagal menyimpan jurnal!', 'error');
             }
         });
 
@@ -1511,66 +1292,64 @@
                 return;
             }
             
-            let presensiHariIni = presensiData.filter(p => 
-                p.tanggal === tanggal && 
-                p.guru_id == currentUser.id
-            );
-            
+            let siswaFilter = siswaData;
             if (kelas) {
-                presensiHariIni = presensiHariIni.filter(p => p.kelas === kelas);
+                siswaFilter = siswaData.filter(s => s.kelas === kelas);
             }
+            
+            const presensiHariIni = presensiData.filter(p => p.tanggal === tanggal);
             
             let html = `
                 <h3 class="text-lg font-semibold mb-4">Rekap Harian - ${tanggal}</h3>
-                <p class="text-sm text-gray-600 mb-4">Menampilkan presensi untuk mata pelajaran yang Anda ajar</p>
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto">
                         <thead>
-                            <tr class="bg-gray-50">
-                                <th class="px-4 py-2 text-left">No</th>
-                                <th class="px-4 py-2 text-left">Nama</th>
-                                <th class="px-4 py-2 text-left">NIS</th>
-                                <th class="px-4 py-2 text-left">Kelas</th>
-                                <th class="px-4 py-2 text-left">Mata Pelajaran</th>
-                                <th class="px-4 py-2 text-left">Status</th>
+                            <tr class="bg-gray-50 border border-gray-300">
+                                <th class="px-2 py-2 text-center border border-gray-300 w-1 whitespace-nowrap">No</th>
+                                <th class="px-4 py-2 text-left border border-gray-300">Nama</th>
+                                <th class="px-4 py-2 center border border-gray-300">Kelas</th>
+                                <th class="px-4 py-2 center border border-gray-300">Status</th>
                             </tr>
                         </thead>
                         <tbody>
             `;
             
-            if (presensiHariIni.length === 0) {
+            siswaFilter.forEach((siswa, index) => {
+                const presensi = presensiHariIni.find(p => p.siswa_id === siswa.id);
+                const status = presensi ? presensi.status : 'Alpha';
+               // const statusColor = status === 'Hadir' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold';
+                 const statusClass = {
+                    'Hadir': 'bg-green-100 text-green-800',
+                    'Sakit': 'bg-yellow-100 text-yellow-800',
+                    'Izin': 'bg-blue-100 text-blue-800',
+                    'Alpha': 'bg-red-100 text-red-800',
+                    'Dispen': 'bg-purple-100 text-purple-800'
+                };
+                
+                const statusText = {
+                    'Hadir': '✅ Hadir',
+                    'Sakit': '🤒 Sakit',
+                    'Izin': '📝 Izin',
+                    'Alpha': '❌ Alpha',
+                    'Dispen': '📄 Dispen'
+                };
+
                 html += `
-                    <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                            Tidak ada data presensi untuk tanggal ${tanggal}
-                        </td>
-                    </tr>
+                   
+                
+                <tr>
+                        <td class="border border-gray-300 px-2 py-2 text-center">${index + 1}</td>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">${siswa.nama}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">${siswa.kelas}</span>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">
+                        <span class="${statusClass[status]} px-2 py-1 rounded text-sm font-medium">${statusText[status]}</span>
+                    </td>
+                    
+                     </tr>
                 `;
-            } else {
-                presensiHariIni.forEach((presensi, index) => {
-                    const siswa = siswaData.find(s => s.id === presensi.siswa_id);
-                    if (!siswa) return;
-                    
-                    let mapelName = '-';
-                    if (presensi.mapel_id) {
-                        const mapelObj = mapelData.find(m => m.id == presensi.mapel_id);
-                        mapelName = mapelObj ? mapelObj.nama_mapel : '-';
-                    }
-                    
-                    const statusColor = presensi.status === 'Hadir' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold';
-                    
-                    html += `
-                        <tr class="border-b">
-                            <td class="px-4 py-2">${index + 1}</td>
-                            <td class="px-4 py-2">${siswa.nama}</td>
-                            <td class="px-4 py-2">${siswa.nis || '-'}</td>
-                            <td class="px-4 py-2">${presensi.kelas}</td>
-                            <td class="px-4 py-2">${mapelName}</td>
-                            <td class="px-4 py-2 ${statusColor}">${presensi.status}</td>
-                        </tr>
-                    `;
-                });
-            }
+            });
             
             html += '</tbody></table></div>';
             document.getElementById('hasilRekap').innerHTML = html;
@@ -1579,85 +1358,67 @@
         function rekapSemuaWaktu() {
             const kelas = document.getElementById('filterKelasRekap').value;
             
-            const presensiGuru = presensiData.filter(p => p.guru_id == currentUser.id);
-            
-            const siswaIds = [...new Set(presensiGuru.map(p => p.siswa_id))];
-            let siswaFilter = siswaData.filter(s => siswaIds.includes(s.id));
-            
+            let siswaFilter = siswaData;
             if (kelas) {
-                siswaFilter = siswaFilter.filter(s => s.kelas === kelas);
+                siswaFilter = siswaData.filter(s => s.kelas === kelas);
             }
             
             let html = `
                 <h3 class="text-lg font-semibold mb-4">Rekap Semua Waktu</h3>
-                <p class="text-sm text-gray-600 mb-4">Menampilkan rekap presensi untuk mata pelajaran yang Anda ajar</p>
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto">
                         <thead>
                             <tr class="bg-gray-50">
                                 <th class="px-4 py-2 text-left">No</th>
                                 <th class="px-4 py-2 text-left">Nama</th>
-                                <th class="px-4 py-2 text-left">NIS</th>
-                                <th class="px-4 py-2 text-left">Kelas</th>
-                                <th class="px-4 py-2 text-left">Hadir</th>
-                                <th class="px-4 py-2 text-left">Sakit</th>
-                                <th class="px-4 py-2 text-left">Ijin</th>
-                                <th class="px-4 py-2 text-left">Alpha</th>
-                                <th class="px-4 py-2 text-left">Dispen</th>
-                                <th class="px-4 py-2 text-left">Total</th>
-                                <th class="px-4 py-2 text-left">Persentase</th>
+                                <th class="px-4 py-2 text-center">Kelas</th>
+                                <th class="px-4 py-2 text-center">Hadir</th>
+                                <th class="px-4 py-2 text-center">Sakit</th>
+                                <th class="px-4 py-2 text-center">Ijin</th>
+                                <th class="px-4 py-2 text-center">Alpha</th>
+                                <th class="px-4 py-2 text-center">Dispen</th>
+                                <th class="px-4 py-2 text-center">Persentase</th>
                             </tr>
                         </thead>
                         <tbody>
             `;
             
-            if (siswaFilter.length === 0) {
+            siswaFilter.forEach((siswa, index) => {
+                const presensiSiswa = presensiData.filter(p => p.siswa_id === siswa.id);
+                
+                const hadir = presensiSiswa.filter(p => p.status === 'Hadir').length;
+                const sakit = presensiSiswa.filter(p => p.status === 'Sakit').length;
+                const ijin = presensiSiswa.filter(p => p.status === 'Ijin').length;
+                const alpha = presensiSiswa.filter(p => p.status === 'Alpha').length;
+                const dispen = presensiSiswa.filter(p => p.status === 'Dispen').length;
+                
+                const total = presensiSiswa.length;
+                const persentase = total > 0 ? (((hadir + dispen) / total) * 100).toFixed(1) : 0;
+                
                 html += `
-                    <tr>
-                        <td colspan="11" class="px-4 py-8 text-center text-gray-500">
-                            Tidak ada data presensi untuk mata pelajaran yang Anda ajar
-                        </td>
+                    <tr class="border-b">
+                        <td class="px-4 py-2">${index + 1}</td>
+                        <td class="px-4 py-2">${siswa.nama}</td>
+                        <td class="px-4 py-2 text-center">${siswa.kelas}</td>
+                        <td class="px-4 py-2 text-green-600 text-center">${hadir}</td>
+                        <td class="px-4 py-2 text-yellow-600 text-center">${sakit}</td>
+                        <td class="px-4 py-2 text-blue-600 text-center">${ijin}</td>
+                        <td class="px-4 py-2 text-red-600 text-center">${alpha}</td>
+                        <td class="px-4 py-2 text-purple-600 text-center">${dispen}</td>
+                       <td class="px-4 py-2 text-center font-semibold ${persentase >= 80 ? 'text-green-600' : persentase >= 60 ? 'text-yellow-600' : 'text-red-600'}">${persentase}%</td>
+             
                     </tr>
                 `;
-            } else {
-                siswaFilter.forEach((siswa, index) => {
-                    const presensiSiswa = presensiGuru.filter(p => p.siswa_id === siswa.id);
-                    
-                    const hadir = presensiSiswa.filter(p => p.status === 'Hadir').length;
-                    const sakit = presensiSiswa.filter(p => p.status === 'Sakit').length;
-                    const ijin = presensiSiswa.filter(p => p.status === 'Ijin').length;
-                    const alpha = presensiSiswa.filter(p => p.status === 'Alpha').length;
-                    const dispen = presensiSiswa.filter(p => p.status === 'Dispen').length;
-                    
-                    const total = presensiSiswa.length;
-                    const persentase = total > 0 ? (((hadir + dispen) / total) * 100).toFixed(1) : 0;
-                    
-                    html += `
-                        <tr class="border-b">
-                            <td class="px-4 py-2">${index + 1}</td>
-                            <td class="px-4 py-2">${siswa.nama}</td>
-                            <td class="px-4 py-2">${siswa.nis || '-'}</td>
-                            <td class="px-4 py-2">${siswa.kelas}</td>
-                            <td class="px-4 py-2 text-green-600">${hadir}</td>
-                            <td class="px-4 py-2 text-yellow-600">${sakit}</td>
-                            <td class="px-4 py-2 text-blue-600">${ijin}</td>
-                            <td class="px-4 py-2 text-red-600">${alpha}</td>
-                            <td class="px-4 py-2 text-purple-600">${dispen}</td>
-                            <td class="px-4 py-2 font-semibold">${total}</td>
-                            <td class="px-4 py-2 font-semibold">${persentase}%</td>
-                        </tr>
-                    `;
-                });
-            }
+            });
             
             html += '</tbody></table></div>';
             document.getElementById('hasilRekap').innerHTML = html;
         }
 
-        function loadJurnal() {
+       function loadJurnal() {
             const tanggal = document.getElementById('filterTanggalJurnal').value;
             const kelas = document.getElementById('filterKelasJurnal').value;
-            const mapelId = document.getElementById('filterMapelJurnal').value;
+            const mapel = document.getElementById('filterMapelJurnal').value;
             
             let jurnalFilter = jurnalData;
             if (tanggal) {
@@ -1666,25 +1427,25 @@
             if (kelas) {
                 jurnalFilter = jurnalFilter.filter(j => j.kelas === kelas);
             }
-            if (mapelId) {
-                jurnalFilter = jurnalFilter.filter(j => j.mapel_id == mapelId);
+            if (mapel) {
+                jurnalFilter = jurnalFilter.filter(j => j.mapel === mapel);
             }
             
+            // Desktop Table
             const tbody = document.getElementById('daftarJurnal');
             tbody.innerHTML = '';
             
+            // Mobile Cards
+            const mobileContainer = document.getElementById('daftarJurnalMobile');
+            mobileContainer.innerHTML = '';
+            
             jurnalFilter.forEach((jurnal, index) => {
-                let mapelName = '-';
-                if (jurnal.mapel_id) {
-                    const mapelObj = mapelData.find(m => m.id == jurnal.mapel_id);
-                    mapelName = mapelObj ? mapelObj.nama_mapel : '-';
-                }
-                
+                // Desktop table row
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
                 row.innerHTML = `
                     <td class="px-4 py-2">${index + 1}</td>
-                    <td class="px-4 py-2">${mapelName}</td>
+                    <td class="px-4 py-2">${jurnal.mapel}</td>
                     <td class="px-4 py-2">${jurnal.kelas}</td>
                     <td class="px-4 py-2">${jurnal.tanggal}</td>
                     <td class="px-4 py-2">${jurnal.jam_awal}</td>
@@ -1692,32 +1453,105 @@
                     <td class="px-4 py-2 text-green-600">${jurnal.jumlah_hadir}</td>
                     <td class="px-4 py-2 text-red-600">${jurnal.jumlah_tidak_hadir}</td>
                     <td class="px-4 py-2 text-sm">${jurnal.nama_tidak_hadir || '-'}</td>
-                    <td class="px-4 py-2 text-sm">${jurnal.kegiatan}</td>
-                    <td class="px-4 py-2 text-sm">${jurnal.materi}</td>
-                    <td class="px-4 py-2 text-sm">${jurnal.keterangan || '-'}</td>
+                    <td class="px-4 py-2">${jurnal.kegiatan}</td>
+                    <td class="px-4 py-2">${jurnal.materi || '-'}</td>
+                    <td class="px-4 py-2">${jurnal.keterangan || '-'}</td>
                     <td class="px-4 py-2">
                         <button onclick="editJurnal(${jurnal.id})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm mr-2">Edit</button>
                         <button onclick="hapusJurnal(${jurnal.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">Hapus</button>
                     </td>
                 `;
                 tbody.appendChild(row);
+                
+                // Mobile card
+                const card = document.createElement('div');
+                card.className = 'bg-gray-50 rounded-lg p-4 border';
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm font-medium text-gray-600">No</div>
+                            <div class="flex gap-2">
+                                <button onclick="editJurnal(${jurnal.id})" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs">Edit</button>
+                                <button onclick="hapusJurnal(${jurnal.id})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="text-lg font-semibold text-blue-600">${index + 1}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Mata Pelajaran:</div>
+                        <div class="text-base font-medium">${jurnal.mapel}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Kelas:</div>
+                        <div class="text-base font-medium">${jurnal.kelas}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Tanggal:</div>
+                        <div class="text-base">${jurnal.tanggal}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Jam Awal:</div>
+                        <div class="text-base">${jurnal.jam_awal}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Jam Akhir:</div>
+                        <div class="text-base">${jurnal.jam_akhir}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Hadir:</div>
+                        <div class="text-base text-green-600 font-semibold">${jurnal.jumlah_hadir}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Tidak Hadir:</div>
+                        <div class="text-base text-red-600 font-semibold">${jurnal.jumlah_tidak_hadir}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Nama Siswa Tidak Hadir:</div>
+                        <div class="text-base">${jurnal.nama_tidak_hadir || '-'}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Kegiatan:</div>
+                        <div class="text-base">${jurnal.kegiatan}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Materi:</div>
+                        <div class="text-base">${jurnal.materi || '-'}</div>
+                        
+                        <div class="text-sm font-medium text-gray-600">Keterangan:</div>
+                        <div class="text-base">${jurnal.keterangan || '-'}</div>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
             });
+        }
+
+        function hapusJurnal(id) {
+            showConfirmModal('Apakah Anda yakin ingin menghapus jurnal ini?', async () => {
+                try {
+                    await deleteJurnal(id);
+                    jurnalData = jurnalData.filter(j => j.id !== id);
+                    showAlert('Data berhasil dihapus!', 'success');
+                    loadJurnal();
+                } catch (error) {
+                    showAlert('Gagal menghapus jurnal!', 'error');
+                }
+            });
+        }
+
+        // Modal Functions
+        function showConfirmModal(message, callback) {
+            document.getElementById('pesanKonfirmasi').textContent = message;
+            document.getElementById('modalKonfirmasi').classList.remove('hidden');
+            document.getElementById('btnKonfirmasi').onclick = () => {
+                callback();
+                closeModal();
+            };
         }
 
         function editJurnal(id) {
             const jurnal = jurnalData.find(j => j.id === id);
             if (jurnal) {
                 document.getElementById('editJurnalId').value = jurnal.id;
-                document.getElementById('editNamaMapel').value = jurnal.mapel_id;
+                document.getElementById('editNamaMapel').value = jurnal.mapel;
                 document.getElementById('editKelasJurnal').value = jurnal.kelas;
                 document.getElementById('editJamAwal').value = jurnal.jam_awal;
                 document.getElementById('editJamAkhir').value = jurnal.jam_akhir;
                 document.getElementById('editJumlahHadir').value = jurnal.jumlah_hadir;
                 document.getElementById('editJumlahTidakHadir').value = jurnal.jumlah_tidak_hadir;
-                document.getElementById('editNamaTidakHadir').value = jurnal.nama_tidak_hadir || '';
+                document.getElementById('editNamaTidakHadir').value = jurnal.nama_tidak_hadir;
                 document.getElementById('editKegiatan').value = jurnal.kegiatan;
                 document.getElementById('editMateri').value = jurnal.materi;
-                document.getElementById('editKeterangan').value = jurnal.keterangan || '';
+                document.getElementById('editKeterangan').value = jurnal.keterangan;
                 document.getElementById('modalEditJurnal').classList.remove('hidden');
             }
         }
@@ -1725,7 +1559,7 @@
         document.getElementById('formEditJurnal').addEventListener('submit', async function(e) {
             e.preventDefault();
             const id = parseInt(document.getElementById('editJurnalId').value);
-            const mapelId = document.getElementById('editNamaMapel').value;
+            const mapel = document.getElementById('editNamaMapel').value;
             const kelas = document.getElementById('editKelasJurnal').value;
             const jamAwal = document.getElementById('editJamAwal').value;
             const jamAkhir = document.getElementById('editJamAkhir').value;
@@ -1738,12 +1572,12 @@
             
             try {
                 const jurnalUpdate = {
-                    mapel_id: parseInt(mapelId),
+                    mapel: mapel,
                     kelas: kelas,
-                    jam_awal: parseInt(jamAwal),
-                    jam_akhir: parseInt(jamAkhir),
-                    jumlah_hadir: parseInt(jumlahHadir),
-                    jumlah_tidak_hadir: parseInt(jumlahTidakHadir),
+                    jam_awal: jamAwal,
+                    jam_akhir: jamAkhir,
+                    jumlah_hadir: jumlahHadir,
+                    jumlah_tidak_hadir: jumlahTidakHadir,
                     nama_tidak_hadir: namaTidakHadir,
                     kegiatan: kegiatan,
                     materi: materi,
@@ -1757,7 +1591,7 @@
                     Object.assign(jurnalData[index], jurnalUpdate);
                 }
                 
-                showAlert('Jurnal berhasil diperbarui!', 'success');
+                showAlert('Data berhasil diperbarui!', 'success');
                 closeModal();
                 loadJurnal();
             } catch (error) {
@@ -1765,23 +1599,17 @@
             }
         });
 
-        function hapusJurnal(id) {
-            showConfirmModal('Apakah Anda yakin ingin menghapus jurnal ini?', async () => {
-                try {
-                    await deleteJurnal(id);
-                    jurnalData = jurnalData.filter(j => j.id !== id);
-                    showAlert('Jurnal berhasil dihapus!', 'success');
-                    loadJurnal();
-                } catch (error) {
-                    showAlert('Gagal menghapus jurnal!', 'error');
-                }
-            });
+        function closeModal() {
+            document.getElementById('modalKonfirmasi').classList.add('hidden');
+            document.getElementById('modalEditSiswa').classList.add('hidden');
+            document.getElementById('modalEditJurnal').classList.add('hidden');
         }
 
+        // PDF Download Function
         function downloadJurnalPDF() {
             const tanggal = document.getElementById('filterTanggalJurnal').value;
             const kelas = document.getElementById('filterKelasJurnal').value;
-            const mapelId = document.getElementById('filterMapelJurnal').value;
+            const mapel = document.getElementById('filterMapelJurnal').value;
             
             let jurnalFilter = jurnalData;
             if (tanggal) {
@@ -1790,8 +1618,8 @@
             if (kelas) {
                 jurnalFilter = jurnalFilter.filter(j => j.kelas === kelas);
             }
-            if (mapelId) {
-                jurnalFilter = jurnalFilter.filter(j => j.mapel_id == mapelId);
+            if (mapel) {
+                jurnalFilter = jurnalFilter.filter(j => j.mapel === mapel);
             }
             
             if (jurnalFilter.length === 0) {
@@ -1802,54 +1630,98 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            doc.setFontSize(16);
-            doc.text('Rekap Jurnal Mengajar', 20, 20);
+            // Group jurnal by date
+            const jurnalByDate = {};
+            jurnalFilter.forEach(jurnal => {
+                if (!jurnalByDate[jurnal.tanggal]) {
+                    jurnalByDate[jurnal.tanggal] = [];
+                }
+                jurnalByDate[jurnal.tanggal].push(jurnal);
+            });
             
-            const tableData = jurnalFilter.map((jurnal, index) => {
-                let mapelName = '-';
-                if (jurnal.mapel_id) {
-                    const mapelObj = mapelData.find(m => m.id == jurnal.mapel_id);
-                    mapelName = mapelObj ? mapelObj.nama_mapel : '-';
+            let yPosition = 20;
+            
+            // Title
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('REKAP JURNAL MENGAJAR', 105, yPosition, { align: 'center' });
+            yPosition += 15;
+            
+            // Process each date
+            Object.keys(jurnalByDate).sort().forEach((tanggalKey, dateIndex) => {
+                if (dateIndex > 0) {
+                    // Add new page for each date after the first
+                    doc.addPage();
+                    yPosition = 20;
                 }
                 
-                return [
+                const jurnalTanggal = jurnalByDate[tanggalKey];
+                
+                // Date header
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text(`Tanggal: ${tanggalKey}`, 20, yPosition);
+                yPosition += 10;
+                
+                // Prepare table data
+                const tableData = jurnalTanggal.map((jurnal, index) => [
                     index + 1,
-                    mapelName,
+                    jurnal.mapel,
                     jurnal.kelas,
                     jurnal.tanggal,
-                    `${jurnal.jam_awal}-${jurnal.jam_akhir}`,
+                    jurnal.jam_awal,
+                    jurnal.jam_akhir,
                     jurnal.jumlah_hadir,
                     jurnal.jumlah_tidak_hadir,
+                    jurnal.nama_tidak_hadir || '-',
                     jurnal.kegiatan,
-                    jurnal.materi
-                ];
+                    jurnal.materi || '-',
+                    jurnal.keterangan || '-'
+                ]);
+                
+                // Create table
+                doc.autoTable({
+                    head: [['No', 'Mata Pelajaran', 'Kelas', 'Tanggal', 'Jam Awal', 'Jam Akhir', 'Hadir', 'Tidak Hadir', 'Nama Siswa Tidak Hadir', 'Kegiatan', 'Materi', 'Keterangan']],
+                    body: tableData,
+                    startY: yPosition,
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2
+                    },
+                    headStyles: {
+                        fillColor: [66, 139, 202],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 8 },  // No
+                        1: { cellWidth: 20 }, // Mata Pelajaran
+                        2: { cellWidth: 12 }, // Kelas
+                        3: { cellWidth: 18 }, // Tanggal
+                        4: { cellWidth: 12 }, // Jam Awal
+                        5: { cellWidth: 12 }, // Jam Akhir
+                        6: { cellWidth: 10 }, // Hadir
+                        7: { cellWidth: 12 }, // Tidak Hadir
+                        8: { cellWidth: 30 }, // Nama Siswa Tidak Hadir
+                        9: { cellWidth: 25 }, // Kegiatan
+                        10: { cellWidth: 25 }, // Materi
+                        11: { cellWidth: 20 }  // Keterangan
+                    },
+                    margin: { left: 10, right: 10 }
+                });
             });
             
-            doc.autoTable({
-                head: [['No', 'Mapel', 'Kelas', 'Tanggal', 'Jam', 'Hadir', 'Tidak Hadir', 'Kegiatan', 'Materi']],
-                body: tableData,
-                startY: 30,
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [66, 139, 202] }
-            });
+            // Generate filename
+            const today = new Date().toISOString().split('T')[0];
+            let filename = `Rekap_Jurnal_${today}`;
+            if (tanggal) filename += `_${tanggal}`;
+            if (kelas) filename += `_${kelas}`;
+            if (mapel) filename += `_${mapel.replace(/\s+/g, '_')}`;
+            filename += '.pdf';
             
-            doc.save('jurnal-mengajar.pdf');
-        }
-
-        // Modal Functions
-        function showConfirmModal(message, callback) {
-            document.getElementById('pesanKonfirmasi').textContent = message;
-            document.getElementById('modalKonfirmasi').classList.remove('hidden');
-            document.getElementById('btnKonfirmasi').onclick = () => {
-                callback();
-                closeModal();
-            };
-        }
-
-        function closeModal() {
-            document.getElementById('modalKonfirmasi').classList.add('hidden');
-            document.getElementById('modalEditSiswa').classList.add('hidden');
-            document.getElementById('modalEditJurnal').classList.add('hidden');
+            // Save PDF
+            doc.save(filename);
+            showAlert('PDF berhasil diunduh!', 'success');
         }
     </script>
 </html>

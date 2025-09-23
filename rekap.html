@@ -135,13 +135,13 @@
   <div>
     <label for="tahunSelect" style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Tahun:</label>
     <select id="tahunSelect" onchange="generateMonthlyJournal()" style="padding: 8px; border: 1px solid #ccc; font-size: 14px; border-radius: 3px;">
-      <option value="2024">2024</option>
       <option value="2025">2025</option>
       <option value="2026">2026</option>
+      <option value="2027">2027</option>
     </select>
   </div>
   <div>
-    <button onclick="downloadPDF()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 5px;">📄 Download PDF</button>
+    <button  onclick="window.print()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 5px;">📄 Download PDF</button>
   </div>
 </div>
 
@@ -209,26 +209,33 @@
 
   // === Load data dari Supabase ===
   async function loadJournalData(year, month) {
-    try {
-      const { data, error } = await supabase
-        .from('jurnal')
-        .select('*')
-        .gte('tanggal', `${year}-${month.toString().padStart(2, '0')}-01`)
-        .lt('tanggal', `${year}-${(month + 1).toString().padStart(2, '0')}-01`)
-        .order('tanggal', { ascending: true });
-
-      if (error) throw error;
-
-      currentData = {};
-      data.forEach(item => {
-        if (!currentData[item.tanggal]) currentData[item.tanggal] = [];
-        currentData[item.tanggal].push(item);
-      });
-    } catch (error) {
-      console.error('Error load data:', error);
-      alert('Error load data: ' + error.message);
-    }
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  if (!currentUser) {
+    alert("Anda harus login terlebih dahulu");
+    window.location.href = "dashboard.html"; // redirect kalau belum login
+    return;
   }
+
+  const { data, error } = await supabase
+    .from('jurnal')
+    .select('*')
+    .eq('guru_id', currentUser.id)   // 🔹 filter sesuai guru login
+    .gte('tanggal', `${year}-${String(month).padStart(2, '0')}-01`)
+    .lt('tanggal', `${year}-${String(month + 1).padStart(2, '0')}-01`)
+    .order('tanggal', { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  currentData = {};
+  data.forEach(item => {
+    if (!currentData[item.tanggal]) currentData[item.tanggal] = [];
+    currentData[item.tanggal].push(item);
+  });
+}
+
 
   // === Hitung rangkuman mingguan (Ijin, Sakit, Alpha) ===
   function hitungRangkuman(weekDates) {
@@ -411,5 +418,7 @@
 
   // === Jalankan awal ===
   generateMonthlyJournal();
+
+
 </script>
 </html>
