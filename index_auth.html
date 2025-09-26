@@ -20,7 +20,7 @@
     <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md slide-up">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">Jurnal Mengajar</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">📚 Presensi Siswa</h1>
                 <p class="text-gray-600">Silakan login untuk melanjutkan</p>
             </div>
             <form id="loginForm" class="space-y-6">
@@ -273,7 +273,7 @@
                 <div class="space-y-4">
                     <div class="flex flex-col gap-4">
                         <select id="filterKelasRekap" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                            <option value="">Pilih kelas</option>
+                            <option value="">Semua Kelas</option>
                         </select>
                         <input type="date" id="filterTanggal" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                     </div>
@@ -470,8 +470,8 @@
 
     <script>
         // Supabase Configuration
-        const supabaseUrl = 'https://sywjsrhlrskfsgbdrejk.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5d2pzcmhscnNrZnNnYmRyZWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2MzE1NTcsImV4cCI6MjA3NDIwNzU1N30.dHphqWW274fZP3lO_5tGGiBupsGFCWUyeZzW1bT6dMc';
+        const supabaseUrl = 'http://192.168.88.147:8000/';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE';
         const { createClient } = supabase;
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
@@ -592,108 +592,38 @@
         }
 
         async function authenticateUser(username, password) {
-            try {
-                console.log('Attempting to authenticate user:', username);
-                
-                // Try database authentication first
-                const { data: users, error } = await supabaseClient
-                    .from('users')
-                    .select('id, username, nama_lengkap, role, mapel, is_active')
-                    .eq('username', username)
-                    .eq('password', password)
-                    .eq('is_active', true)
-                    .limit(1);
-                
-                if (error) {
-                    console.log('Database authentication failed, using fallback:', error);
-                    // Fallback to hardcoded users
-                    const validUsers = [
-                        {
-                            id: 'admin-001',
-                            username: 'admin',
-                            password: 'admin123',
-                            nama_lengkap: 'Administrator',
-                            role: 'admin',
-                            mapel: null,
-                            is_active: true
-                        },
-                        {
-                            id: 'guru-001',
-                            username: 'guru1',
-                            password: 'guru123',
-                            nama_lengkap: 'Guru Matematika',
-                            role: 'teacher',
-                            mapel: 'Matematika',
-                            is_active: true
-                        },
-                        {
-                            id: 'guru-002',
-                            username: 'guru2',
-                            password: 'guru123',
-                            nama_lengkap: 'Guru Bahasa Indonesia',
-                            role: 'teacher',
-                            mapel: 'Bahasa Indonesia',
-                            is_active: true
-                        }
-                    ];
-                    
-                    const user = validUsers.find(u => 
-                        u.username === username && 
-                        u.password === password && 
-                        u.is_active === true
-                    );
-                    
-                    return user || null;
-                }
-                
-                if (users && users.length > 0) {
-                    console.log('Database authentication successful');
-                    return users[0];
-                }
-                
-                return null;
-            } catch (error) {
-                console.error('Error authenticating user:', error);
-                // Fallback authentication
-                const validUsers = [
-                    {
-                        id: 'admin-001',
-                        username: 'admin',
-                        password: 'admin123',
-                        nama_lengkap: 'Administrator',
-                        role: 'admin',
-                        mapel: null,
-                        is_active: true
-                    },
-                    {
-                        id: 'guru-001',
-                        username: 'guru1',
-                        password: 'guru123',
-                        nama_lengkap: 'Guru Matematika',
-                        role: 'teacher',
-                        mapel: 'Matematika',
-                        is_active: true
-                    },
-                    {
-                        id: 'guru-002',
-                        username: 'guru2',
-                        password: 'guru123',
-                        nama_lengkap: 'Guru Bahasa Indonesia',
-                        role: 'teacher',
-                        mapel: 'Bahasa Indonesia',
-                        is_active: true
-                    }
-                ];
-                
-                const user = validUsers.find(u => 
-                    u.username === username && 
-                    u.password === password && 
-                    u.is_active === true
-                );
-                
-                return user || null;
-            }
+    try {
+        console.log('Attempting to authenticate user:', username);
+
+        // Ambil user dari tabel users di Supabase
+        const { data: user, error } = await supabaseClient
+            .from('users')
+            .select('id, username, nama_lengkap, role, mapel, password, is_active')
+            .eq('username', username)
+            .eq('password', password) // langsung cocokkan plaintext
+            .eq('is_active', true)
+            .limit(1)
+            .single(); // ambil satu row
+
+        if (error) {
+            console.error('Error fetching user from database:', error);
+            return null;
         }
+
+        if (!user) {
+            // user tidak ditemukan atau password salah
+            return null;
+        }
+
+        // Return user tanpa password
+        const { password: _, ...userInfo } = user;
+        return userInfo;
+
+    } catch (error) {
+        console.error('Error authenticating user:', error);
+        return null;
+    }
+}
 
         async function saveSiswa(siswa) {
             try {
@@ -825,7 +755,7 @@
                 if (mapelError) {
                     console.error('Mapel query error:', mapelError);
                     console.log('Creating fallback mapel data...');
-                    createFallbackMapelData();
+                  
                     return;
                 }
                 
@@ -834,7 +764,7 @@
 
                 if (mapelData.length === 0) {
                     console.warn('No mapel data returned from database, creating fallback data');
-                    createFallbackMapelData();
+                  
                     return;
                 }
 
@@ -845,72 +775,30 @@
             } catch (error) {
                 console.error('Error loading mapel options:', error);
                 console.log('Creating fallback mapel data due to error...');
-                createFallbackMapelData();
+               
             }
         }
 
         async function createDefaultMapelData() {
-            try {
-                const { data: existingMapel, error: checkError } = await supabaseClient
-                    .from('mapel')
-                    .select('id')
-                    .limit(1);
-                
-                if (checkError) {
-                    console.log('Mapel table might not exist or accessible:', checkError);
-                    return;
-                }
-                
-                if (!existingMapel || existingMapel.length === 0) {
-                    console.log('Mapel table is empty, creating default data...');
-                    
-                    const defaultMapel = [
-                        { nama_mapel: 'Matematika' },
-                        { nama_mapel: 'Bahasa Indonesia' },
-                        { nama_mapel: 'Bahasa Inggris' },
-                        { nama_mapel: 'IPA' },
-                        { nama_mapel: 'IPS' },
-                        { nama_mapel: 'PKn' },
-                        { nama_mapel: 'Seni Budaya' },
-                        { nama_mapel: 'Pendidikan Jasmani' },
-                        { nama_mapel: 'Prakarya' },
-                        { nama_mapel: 'Agama' }
-                    ];
-                    
-                    const { data: insertedMapel, error: insertError } = await supabaseClient
-                        .from('mapel')
-                        .insert(defaultMapel)
-                        .select();
-                    
-                    if (insertError) {
-                        console.error('Error inserting default mapel:', insertError);
-                    } else {
-                        console.log('Default mapel data created successfully:', insertedMapel);
-                    }
-                }
-            } catch (error) {
-                console.error('Error creating default mapel data:', error);
-            }
+    try {
+        // Hanya cek koneksi ke tabel mapel, tidak insert data default
+        const { data: existingMapel, error } = await supabaseClient
+            .from('mapel')
+            .select('id')
+            .limit(1);
+
+        if (error) {
+            console.error('Mapel table might not exist or accessible:', error);
+            return;
         }
 
-        function createFallbackMapelData() {
-            console.log('Using fallback mapel data...');
-            mapelData = [
-                { id: 1, nama_mapel: 'Matematika' },
-                { id: 2, nama_mapel: 'Bahasa Indonesia' },
-                { id: 3, nama_mapel: 'Bahasa Inggris' },
-                { id: 4, nama_mapel: 'IPA' },
-                { id: 5, nama_mapel: 'IPS' },
-                { id: 6, nama_mapel: 'PKn' },
-                { id: 7, nama_mapel: 'Seni Budaya' },
-                { id: 8, nama_mapel: 'Pendidikan Jasmani' },
-                { id: 9, nama_mapel: 'Prakarya' },
-                { id: 10, nama_mapel: 'Agama' }
-            ];
-            
-            populateMapelDropdowns();
-            showAlert(`${mapelData.length} mata pelajaran dimuat (mode offline)`, 'success');
-        }
+        console.log('Mapel table accessible, no default data inserted.');
+    } catch (error) {
+        console.error('Error checking mapel table:', error);
+    }
+}
+
+
 
         function populateMapelDropdowns() {
             const mapelSelects = ['filterMapelPresensi', 'namaMapel', 'filterMapelJurnal', 'editNamaMapel'];
@@ -1008,39 +896,66 @@
         });
 
         // Login Function
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                const user = await authenticateUser(username, password);
-                
-                if (user) {
-                    currentUser = user;
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-                    
-                    document.getElementById('loginPage').classList.add('hidden');
-                    document.getElementById('dashboard').classList.remove('hidden');
-                    
-                    let userInfoText = `Selamat datang, ${user.nama_lengkap} (${user.role})`;
-                    if (user.mapel && user.role === 'teacher') {
-                        userInfoText += ` - ${user.mapel}`;
-                    }
-                    document.getElementById('userInfo').textContent = userInfoText;
-                    
-                    updateMenuVisibility();
-                    
-                    showAlert('Login berhasil!', 'success');
-                    await loadAllData();
-                } else {
-                    showAlert('Username atau password salah!', 'error');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showAlert('Terjadi kesalahan saat login!', 'error');
-            }
+       document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('username').value; // Supabase Auth pakai email
+    const password = document.getElementById('password').value;
+
+    try {
+        // Login ke Supabase Auth
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
         });
+
+        if (error || !data.session) {
+            showAlert('Username atau password salah!', 'error');
+            return;
+        }
+
+        const user = data.user;
+        const session = data.session;
+
+        currentUser = user;
+
+        // Simpan user info dan access token
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('accessToken', session.access_token);
+
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+
+     const { data: profile, error: profileError } = await supabaseClient
+  .from('users')
+  .select('nama_lengkap, role, mapel', { head: false })
+  .eq('auth_id', user.id)
+  .single();
+
+
+
+    console.log("Profile result:", profile);
+console.log("Profile error:", profileError);
+
+let userInfoText = `Selamat datang, ${profile?.nama_lengkap || user.email} (${profile?.role || 'userr'})`;
+if (profile?.mapel && profile?.role === 'teacher') {
+    userInfoText += ` - ${profile.mapel}`;
+}
+        document.getElementById('userInfo').textContent = userInfoText;
+
+        updateMenuVisibility();
+
+        showAlert('Login berhasil!', 'success');
+
+        // loadAllData harus menggunakan supabaseClient yang sudah login
+        await loadAllData();
+
+    } catch (error) {
+        console.error('Login error:', error);
+        showAlert('Terjadi kesalahan saat login!', 'error');
+    }
+});
+
+
 
         function logout() {
             currentUser = null;
