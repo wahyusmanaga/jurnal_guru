@@ -877,7 +877,7 @@
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
                 
-                let userInfoText = `Selamat datang, ${currentUser.nama_lengkap} (${currentUser.role})`;
+                let userInfoText = `${currentUser.nama_lengkap}`;
                 if (currentUser.mapel && currentUser.role === 'teacher') {
                     userInfoText += ` - ${currentUser.mapel}`;
                 }
