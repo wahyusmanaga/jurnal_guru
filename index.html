@@ -549,15 +549,9 @@
         async function loadAllData() {
             try {
                 // Load siswa data with new fields
-              const { data: siswa, error: siswaError } = await supabaseClient
-                .from('siswa')
-                .select('*')
-                .order('kelas', { ascending: true }) // urutkan dulu berdasarkan kelas
-                .order('nama', { ascending: true }); // lalu berdasarkan nama
-
-                if (siswaError) throw siswaError;
-
-                const siswaData = siswa || [];
+              const { data: siswa, error: siswaError } = await supabaseClient .from('siswa') .select('*') .order('nama'); 
+              if (siswaError) throw siswaError;
+              siswaData = siswa || [];
 
                 // Load presensi data with guru filter
                 let presensiQuery = supabaseClient
