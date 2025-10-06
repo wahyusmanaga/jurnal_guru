@@ -87,96 +87,182 @@ ALTER TABLE presensi ENABLE ROW LEVEL SECURITY;
 ALTER TABLE jurnal ENABLE ROW LEVEL SECURITY;
 
 
--- Admin full access
-CREATE POLICY admin_users_full
-ON users
-FOR ALL
-USING (EXISTS (SELECT 1 WHERE auth.role() = 'admin'))
-WITH CHECK (EXISTS (SELECT 1 WHERE auth.role() = 'admin'));
+-- DROP lama (aman)
+DROP POLICY IF EXISTS admin_users_full ON public.users;
+DROP POLICY IF EXISTS guru_users_select ON public.users;
+DROP POLICY IF EXISTS guru_presensi_crud ON public.presensi;
+DROP POLICY IF EXISTS admin_presensi_full ON public.presensi;
+DROP POLICY IF EXISTS guru_jurnal_crud ON public.jurnal;
+DROP POLICY IF EXISTS admin_jurnal_full ON public.jurnal;
+DROP POLICY IF EXISTS mapel_select_all ON public.mapel;
+DROP POLICY IF EXISTS mapel_admin_insert ON public.mapel;
+DROP POLICY IF EXISTS mapel_admin_update ON public.mapel;
+DROP POLICY IF EXISTS mapel_admin_delete ON public.mapel;
+DROP POLICY IF EXISTS siswa_select_all ON public.siswa;
+DROP POLICY IF EXISTS siswa_admin_insert ON public.siswa;
+DROP POLICY IF EXISTS siswa_admin_update ON public.siswa;
+DROP POLICY IF EXISTS siswa_admin_delete ON public.siswa;
 
--- Guru hanya bisa lihat data sendiri
+-- Helper: cek admin via tabel public.users (digunakan langsung di setiap policy)
+-- ADMIN: full access on users
+CREATE POLICY admin_users_full
+ON public.users
+FOR ALL
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
+
+-- Guru hanya bisa lihat data sendiri (users)
 CREATE POLICY guru_users_select
-ON users
+ON public.users
 FOR SELECT
+TO authenticated
 USING (auth.uid() = auth_id);
 
-
 -- Guru CRUD presensi sendiri
+-- NOTE: jika presensi.guru_id = uuid, gunakan auth.uid()::uuid = guru_id
 CREATE POLICY guru_presensi_crud
-ON presensi
+ON public.presensi
 FOR ALL
-USING (auth.uid() = guru_id)
-WITH CHECK (auth.uid() = guru_id);
+TO authenticated
+USING (auth.uid()::uuid = guru_id)
+WITH CHECK (auth.uid()::uuid = guru_id);
 
--- Admin full access
+-- Admin full access presensi (cek role di public.users)
 CREATE POLICY admin_presensi_full
-ON presensi
+ON public.presensi
 FOR ALL
-USING (auth.role() = 'admin')
-WITH CHECK (auth.role() = 'admin');
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
 -- Guru CRUD jurnal sendiri
 CREATE POLICY guru_jurnal_crud
-ON jurnal
+ON public.jurnal
 FOR ALL
-USING (auth.uid() = guru_id)
-WITH CHECK (auth.uid() = guru_id);
+TO authenticated
+USING (auth.uid()::uuid = guru_id)
+WITH CHECK (auth.uid()::uuid = guru_id);
 
--- Admin full access
+-- Admin full access jurnal
 CREATE POLICY admin_jurnal_full
-ON jurnal
+ON public.jurnal
 FOR ALL
-USING (auth.role() = 'admin')
-WITH CHECK (auth.role() = 'admin');
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
-
--- Semua user bisa SELECT
+-- mapel: semua user bisa SELECT
 CREATE POLICY mapel_select_all
-ON mapel
+ON public.mapel
 FOR SELECT
 USING (true);
 
--- Admin INSERT
+-- mapel: admin privileges
 CREATE POLICY mapel_admin_insert
-ON mapel
+ON public.mapel
 FOR INSERT
-WITH CHECK (auth.role() = 'admin');
+TO authenticated
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
--- Admin UPDATE
 CREATE POLICY mapel_admin_update
-ON mapel
+ON public.mapel
 FOR UPDATE
-USING (auth.role() = 'admin')
-WITH CHECK (auth.role() = 'admin');
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
--- Admin DELETE
 CREATE POLICY mapel_admin_delete
-ON mapel
+ON public.mapel
 FOR DELETE
-USING (auth.role() = 'admin');
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
-
--- Semua user bisa SELECT
+-- siswa: semua bisa SELECT (sesuaikan bila ingin dibatasi)
 CREATE POLICY siswa_select_all
-ON siswa
+ON public.siswa
 FOR SELECT
 USING (true);
 
--- Admin INSERT
+-- siswa: admin CRUD
 CREATE POLICY siswa_admin_insert
-ON siswa
+ON public.siswa
 FOR INSERT
-WITH CHECK (auth.role() = 'admin');
+TO authenticated
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
--- Admin UPDATE
 CREATE POLICY siswa_admin_update
-ON siswa
+ON public.siswa
 FOR UPDATE
-USING (auth.role() = 'admin')
-WITH CHECK (auth.role() = 'admin');
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
 
--- Admin DELETE
 CREATE POLICY siswa_admin_delete
-ON siswa
+ON public.siswa
 FOR DELETE
-USING (auth.role() = 'admin');
+TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM public.users u WHERE u.auth_id = auth.uid() AND u.role = 'admin'
+  )
+);
+
