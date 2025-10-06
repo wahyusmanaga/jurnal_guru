@@ -857,7 +857,8 @@
 
         // Set tanggal hari ini dan load data
         document.addEventListener('DOMContentLoaded', async function() {
-            const today = new Date().toISOString().split('T')[0];
+            //const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
             document.getElementById('tanggalPresensi').value = today;
             document.getElementById('filterTanggal').value = today;
             document.getElementById('filterTanggalJurnal').value = today;
