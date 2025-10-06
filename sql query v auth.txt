@@ -266,3 +266,172 @@ USING (
   )
 );
 
+
+------------------------
+DROP POLICY IF EXISTS admin_users_full ON public.users;
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.users u
+    WHERE u.auth_id = auth.uid()
+    AND u.role = 'admin'
+  );
+$$;
+
+
+REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
+
+CREATE POLICY admin_users_full
+ON public.users
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+
+---versi tanpa error----
+-- =====================================================
+-- Fungsi helper: cek apakah user login adalah admin
+-- =====================================================
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.users u
+    WHERE u.auth_id = auth.uid()
+    AND u.role = 'admin'
+  );
+$$;
+
+REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
+
+-- Admin full access (tanpa recursion)
+CREATE POLICY admin_users_full
+ON public.users
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+-- Guru hanya bisa lihat data dirinya sendiri
+CREATE POLICY guru_users_select
+ON public.users
+FOR SELECT
+TO authenticated
+USING (auth.uid() = auth_id);
+
+
+-- Semua user bisa SELECT
+CREATE POLICY mapel_select_all
+ON public.mapel
+FOR SELECT
+TO authenticated
+USING (true);
+
+-- Admin INSERT
+CREATE POLICY mapel_admin_insert
+ON public.mapel
+FOR INSERT
+TO authenticated
+WITH CHECK (public.is_admin());
+
+-- Admin UPDATE
+CREATE POLICY mapel_admin_update
+ON public.mapel
+FOR UPDATE
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+-- Admin DELETE
+CREATE POLICY mapel_admin_delete
+ON public.mapel
+FOR DELETE
+TO authenticated
+USING (public.is_admin());
+
+
+-- Semua user bisa SELECT
+CREATE POLICY siswa_select_all
+ON public.siswa
+FOR SELECT
+TO authenticated
+USING (true);
+
+-- Admin INSERT
+CREATE POLICY siswa_admin_insert
+ON public.siswa
+FOR INSERT
+TO authenticated
+WITH CHECK (public.is_admin());
+
+-- Admin UPDATE
+CREATE POLICY siswa_admin_update
+ON public.siswa
+FOR UPDATE
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+-- Admin DELETE
+CREATE POLICY siswa_admin_delete
+ON public.siswa
+FOR DELETE
+TO authenticated
+USING (public.is_admin());
+
+
+-- Guru CRUD data miliknya sendiri
+CREATE POLICY guru_presensi_crud
+ON public.presensi
+FOR ALL
+TO authenticated
+USING (auth.uid()::uuid = guru_id)
+WITH CHECK (auth.uid()::uuid = guru_id);
+
+-- Admin full access
+CREATE POLICY admin_presensi_full
+ON public.presensi
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+
+-- Guru CRUD data miliknya sendiri
+CREATE POLICY guru_jurnal_crud
+ON public.jurnal
+FOR ALL
+TO authenticated
+USING (auth.uid()::uuid = guru_id)
+WITH CHECK (auth.uid()::uuid = guru_id);
+
+-- Admin full access
+CREATE POLICY admin_jurnal_full
+ON public.jurnal
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.mapel ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.siswa ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.presensi ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.jurnal ENABLE ROW LEVEL SECURITY;
+
+
