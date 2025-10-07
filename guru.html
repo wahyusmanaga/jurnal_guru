@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Akun Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Manajemen Akun Guru</h1>
+            <p class="text-gray-600">Kelola data akun guru dengan mudah</p>
+        </div>
+
+        <!-- Add Teacher Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah Data Guru</h2>
+            <form id="addTeacherForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="teacherName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">NIP</label>
+                    <input type="text" id="teacherNIP" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
+                    <select id="teacherSubject" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Pilih Mata Pelajaran</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="teacherPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-200">
+                        Tambah Guru
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Import CSV Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Import Akun Guru</h2>
+            <div class="flex flex-col sm:flex-row gap-4 items-start">
+                <div class="flex-1">
+                    <input type="file" id="csvFile" accept=".csv" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <p class="text-sm text-gray-500 mt-2">Format CSV: Nama, NIP, Mata Pelajaran, Password</p>
+                </div>
+                <button id="importBtn" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-md transition duration-200">
+                    Import CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Teachers List -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Daftar Guru</h2>
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-gray-600">Tampilkan:</label>
+                    <select id="itemsPerPage" class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span class="text-sm text-gray-600">per halaman</span>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">NIP</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Password</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Mata Pelajaran</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachersTableBody">
+                        <!-- Data will be loaded from database -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+                <div class="text-sm text-gray-600">
+                    Menampilkan <span id="showingStart">0</span> - <span id="showingEnd">0</span> dari <span id="totalItems">0</span> data
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="prevBtn" class="px-3 py-2 text-sm bg-gray-200 text-gray-600 rounded-md hover:bg-gray-300 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Sebelumnya
+                    </button>
+                    <div id="pageNumbers" class="flex gap-1">
+                        <!-- Page numbers will be generated here -->
+                    </div>
+                    <button id="nextBtn" class="px-3 py-2 text-sm bg-gray-200 text-gray-600 rounded-md hover:bg-gray-300 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Selanjutnya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Edit Data Guru</h3>
+            <form id="editTeacherForm">
+                <input type="hidden" id="editIndex">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="editName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">NIP</label>
+                    <input type="text" id="editNIP" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
+                    <select id="editSubject" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Pilih Mata Pelajaran</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="editPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                        Simpan
+                    </button>
+                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+           const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            alert('Silakan login terlebih dahulu.');
+            window.location.href = 'index.html';
+        }
+        // Initialize Supabase
+         const supabaseUrl = 'https://pmvfmkcasargsdtvrzid.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtdmZta2Nhc2FyZ3NkdHZyemlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3MTM2ODAsImV4cCI6MjA3NTI4OTY4MH0.-FJjn0g--3rEtx_wc69pPDPgxneXAo-of8kTZanv7aA';
+        
+          const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Teachers data will be loaded from database
+        let teachers = [];
+        let subjects = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let totalPages = 1;
+
+        // Load subjects from database
+        async function loadSubjects() {
+            try {
+                const { data, error } = await supabase
+                    .from('mapel')
+                    .select('*')
+                    .order('nama_mapel', { ascending: true });
+
+                if (error) throw error;
+
+                subjects = data;
+                populateSubjectDropdowns();
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+                alert('Gagal memuat data mata pelajaran: ' + error.message);
+            }
+        }
+
+        // Populate subject dropdowns
+        function populateSubjectDropdowns() {
+            const addSubjectSelect = document.getElementById('teacherSubject');
+            const editSubjectSelect = document.getElementById('editSubject');
+            
+            // Clear existing options except the first one
+            addSubjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+            editSubjectSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+            
+            // Add subject options
+            subjects.forEach(subject => {
+                const option1 = document.createElement('option');
+                option1.value = subject.nama_mapel;
+                option1.textContent = subject.nama_mapel;
+                addSubjectSelect.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = subject.nama_mapel;
+                option2.textContent = subject.nama_mapel;
+                editSubjectSelect.appendChild(option2);
+            });
+        }
+
+        // Load teachers from database
+        async function loadTeachers() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('role', 'teacher')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                teachers = data.map(user => ({
+                    id: user.id,
+                    name: user.nama_lengkap,
+                    nip: user.username,
+                    subject: user.mapel,
+                    password: user.password,
+                    isActive: user.is_active
+                }));
+
+                renderTeachersTable();
+            } catch (error) {
+                console.error('Error loading teachers:', error);
+                alert('Gagal memuat data guru: ' + error.message);
+            }
+        }
+
+        // Add teacher form handler
+        document.getElementById('addTeacherForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('teacherName').value;
+            const nip = document.getElementById('teacherNIP').value;
+            const subject = document.getElementById('teacherSubject').value;
+            const password = document.getElementById('teacherPassword').value;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([
+                        {
+                            username: nip,
+                            password: password,
+                            nama_lengkap: name,
+                            role: 'teacher',
+                            mapel: subject,
+                            is_active: true
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Reset form
+                this.reset();
+                
+                // Reload teachers list
+                await loadTeachers();
+                
+                // Show success message
+                alert('Data guru berhasil ditambahkan!');
+            } catch (error) {
+                console.error('Error adding teacher:', error);
+                alert('Gagal menambahkan guru: ' + error.message);
+            }
+        });
+
+        // Import CSV handler
+        document.getElementById('importBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Silakan pilih file CSV terlebih dahulu!');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                let importedCount = 0;
+                let errors = [];
+                
+                try {
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (line) {
+                            const [name, nip, subject, password] = line.split(',').map(item => item.trim());
+                            if (name && nip && subject && password) {
+                                try {
+                                    const { error } = await supabase
+                                        .from('users')
+                                        .insert([
+                                            {
+                                                username: nip,
+                                                password: password,
+                                                nama_lengkap: name,
+                                                role: 'teacher',
+                                                mapel: subject,
+                                                is_active: true
+                                            }
+                                        ]);
+
+                                    if (error) {
+                                        errors.push(`Baris ${i + 1}: ${error.message}`);
+                                    } else {
+                                        importedCount++;
+                                    }
+                                } catch (error) {
+                                    errors.push(`Baris ${i + 1}: ${error.message}`);
+                                }
+                            }
+                        }
+                    }
+                    
+                    await loadTeachers();
+                    fileInput.value = '';
+                    
+                    let message = `Berhasil mengimpor ${importedCount} data guru!`;
+                    if (errors.length > 0) {
+                        message += `\n\nError pada ${errors.length} baris:\n${errors.slice(0, 5).join('\n')}`;
+                        if (errors.length > 5) {
+                            message += `\n... dan ${errors.length - 5} error lainnya`;
+                        }
+                    }
+                    alert(message);
+                } catch (error) {
+                    console.error('Import error:', error);
+                    alert('Gagal mengimpor data: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+        });
+
+        // Edit teacher function
+        function editTeacher(index) {
+            const teacher = teachers[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editName').value = teacher.name;
+            document.getElementById('editNIP').value = teacher.nip;
+            document.getElementById('editSubject').value = teacher.subject;
+            document.getElementById('editPassword').value = teacher.password;
+            
+            document.getElementById('editModal').classList.remove('hidden');
+            document.getElementById('editModal').classList.add('flex');
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.getElementById('editModal').classList.remove('flex');
+        }
+
+        // Edit form handler
+        document.getElementById('editTeacherForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const index = parseInt(document.getElementById('editIndex').value);
+            const teacher = teachers[index];
+            const name = document.getElementById('editName').value;
+            const nip = document.getElementById('editNIP').value;
+            const subject = document.getElementById('editSubject').value;
+            const password = document.getElementById('editPassword').value;
+            
+            try {
+                const updateData = {
+                    username: nip,
+                    nama_lengkap: name,
+                    mapel: subject,
+                    updated_at: new Date().toISOString()
+                };
+
+                // Always update password
+                updateData.password = password;
+
+                const { error } = await supabase
+                    .from('users')
+                    .update(updateData)
+                    .eq('id', teacher.id);
+
+                if (error) throw error;
+
+                await loadTeachers();
+                closeEditModal();
+                
+                alert('Data guru berhasil diperbarui!');
+            } catch (error) {
+                console.error('Error updating teacher:', error);
+                alert('Gagal memperbarui data guru: ' + error.message);
+            }
+        });
+
+        // Delete teacher function
+        async function deleteTeacher(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data guru ini?')) {
+                const teacher = teachers[index];
+                
+                try {
+                    const { error } = await supabase
+                        .from('users')
+                        .delete()
+                        .eq('id', teacher.id);
+
+                    if (error) throw error;
+
+                    await loadTeachers();
+                    alert('Data guru berhasil dihapus!');
+                } catch (error) {
+                    console.error('Error deleting teacher:', error);
+                    alert('Gagal menghapus data guru: ' + error.message);
+                }
+            }
+        }
+
+        // Render teachers table with pagination
+        function renderTeachersTable() {
+            const tbody = document.getElementById('teachersTableBody');
+            tbody.innerHTML = '';
+            
+            // Calculate pagination
+            totalPages = Math.ceil(teachers.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, teachers.length);
+            const currentTeachers = teachers.slice(startIndex, endIndex);
+            
+            // Render current page data
+            currentTeachers.forEach((teacher, index) => {
+                const globalIndex = startIndex + index;
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-200';
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-sm text-gray-900">${globalIndex + 1}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${teacher.name}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${teacher.nip}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${teacher.password}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${teacher.subject}</td>
+                    <td class="px-4 py-3 text-sm">
+                        <div class="flex gap-2">
+                            <button onclick="editTeacher(${globalIndex})" class="relative group bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded transition duration-200" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">Edit</span>
+                            </button>
+                            <button onclick="deleteTeacher(${globalIndex})" class="relative group bg-red-500 hover:bg-red-600 text-white p-2 rounded transition duration-200" title="Hapus">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">Hapus</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update pagination info
+            updatePaginationInfo();
+            renderPaginationControls();
+        }
+
+        // Update pagination information
+        function updatePaginationInfo() {
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(currentPage * itemsPerPage, teachers.length);
+            
+            document.getElementById('showingStart').textContent = teachers.length > 0 ? startIndex : 0;
+            document.getElementById('showingEnd').textContent = endIndex;
+            document.getElementById('totalItems').textContent = teachers.length;
+        }
+
+        // Render pagination controls
+        function renderPaginationControls() {
+            const pageNumbers = document.getElementById('pageNumbers');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Clear existing page numbers
+            pageNumbers.innerHTML = '';
+            
+            // Update prev/next buttons
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Generate page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // Adjust start page if we're near the end
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // Add first page and ellipsis if needed
+            if (startPage > 1) {
+                addPageButton(1);
+                if (startPage > 2) {
+                    pageNumbers.appendChild(createEllipsis());
+                }
+            }
+            
+            // Add visible page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(i);
+            }
+            
+            // Add ellipsis and last page if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pageNumbers.appendChild(createEllipsis());
+                }
+                addPageButton(totalPages);
+            }
+        }
+
+        // Add page button
+        function addPageButton(pageNum) {
+            const button = document.createElement('button');
+            button.textContent = pageNum;
+            button.className = `px-3 py-2 text-sm rounded-md transition duration-200 ${
+                pageNum === currentPage 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+            }`;
+            button.onclick = () => goToPage(pageNum);
+            document.getElementById('pageNumbers').appendChild(button);
+        }
+
+        // Create ellipsis
+        function createEllipsis() {
+            const span = document.createElement('span');
+            span.textContent = '...';
+            span.className = 'px-3 py-2 text-sm text-gray-500';
+            return span;
+        }
+
+        // Go to specific page
+        function goToPage(pageNum) {
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                currentPage = pageNum;
+                renderTeachersTable();
+            }
+        }
+
+        // Previous page
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTeachersTable();
+            }
+        }
+
+        // Next page
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTeachersTable();
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSubjects();
+            loadTeachers();
+            
+            // Items per page change handler
+            document.getElementById('itemsPerPage').addEventListener('change', function() {
+                itemsPerPage = parseInt(this.value);
+                currentPage = 1; // Reset to first page
+                renderTeachersTable();
+            });
+            
+            // Pagination button handlers
+            document.getElementById('prevBtn').addEventListener('click', previousPage);
+            document.getElementById('nextBtn').addEventListener('click', nextPage);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986bdab480910af4',t:'MTc1OTE1MjgyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
