@@ -992,6 +992,22 @@
             } else {
                 menuManajemenSiswa.style.display = 'block';
             }
+
+            const menuManajemenMapel = document.getElementById('menuManajemenMapel');
+            
+            if (currentUser && currentUser.role === 'teacher') {
+                menuManajemenMapel.style.display = 'none';
+            } else {
+                menuManajemenMapel.style.display = 'block';
+            }
+
+            const menuManajemenGuru = document.getElementById('menuManajemenGuru');
+            
+            if (currentUser && currentUser.role === 'teacher') {
+                menuManajemenGuru.style.display = 'none';
+            } else {
+                menuManajemenGuru.style.display = 'block';
+            }
         }
 
         function showPage(pageId) {
