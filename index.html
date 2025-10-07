@@ -325,8 +325,8 @@
                                 <th class="px-4 py-2 text-left">Mata Pelajaran</th>
                                 <th class="px-4 py-2 text-left">Kelas</th>
                                 <th class="px-4 py-2 text-left">Tanggal</th>
-                                <th class="px-4 py-2 text-left">Jam Awal</th>
-                                <th class="px-4 py-2 text-left">Jam Akhir</th>
+                                <th class="px-4 py-2 text-left">Jam ke- </th>
+            
                                 <th class="px-4 py-2 text-left">Hadir</th>
                                 <th class="px-4 py-2 text-left">Tidak Hadir</th>
                                 <th class="px-4 py-2 text-left">Nama Siswa Tidak Hadir</th>
@@ -1607,8 +1607,8 @@
                     <td class="px-4 py-2">${index + 1}</td>
                     <td class="px-4 py-2">${mapelName}</td>
                     <td class="px-4 py-2">${jurnal.kelas}</td>
-                    <td class="px-4 py-2">${jurnal.tanggal}</td>
-                    <td class="px-4 py-2">${jurnal.jam_awal}</td>
+                    <td class="px-4 py-2">${jurnal.tanggal}"-"${jurnal.jam_awal}</td>
+                  
                     <td class="px-4 py-2">${jurnal.jam_akhir}</td>
                     <td class="px-4 py-2 text-green-600">${jurnal.jumlah_hadir}</td>
                     <td class="px-4 py-2 text-red-600">${jurnal.jumlah_tidak_hadir}</td>
