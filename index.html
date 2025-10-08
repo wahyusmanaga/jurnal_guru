@@ -479,6 +479,15 @@
         </div>
     </div>
 
+    <!-- Overlay Loading -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
+    <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-3"></div>
+    <p class="text-gray-700 font-medium">Menyimpan data presensi...</p>
+  </div>
+</div>
+
+
     <script>
         // Supabase Configuration
         const supabaseUrl = 'https://pmvfmkcasargsdtvrzid.supabase.co';
@@ -1267,77 +1276,78 @@
         }
 
         async function saveAllPresensi() {
-            const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('filterMapelPresensi').value;
-            const tanggal = document.getElementById('tanggalPresensi').value;
-            
-            if (!kelas || !mapelId || !tanggal) {
-                showAlert('Pilih kelas, mata pelajaran, dan tanggal terlebih dahulu!', 'error');
-                return;
-            }
-            
-            if (!currentUser || !currentUser.id) {
-                showAlert('Sesi login tidak valid. Silakan login ulang!', 'error');
-                return;
-            }
-            
-            try {
-                const siswaKelas = siswaData.filter(s => s.kelas === kelas);
-                
-                if (siswaKelas.length === 0) {
-                    showAlert('Tidak ada siswa di kelas yang dipilih!', 'error');
-                    return;
-                }
-                
-                let savedCount = 0;
-                let errorCount = 0;
-                
-                const presensiSelects = document.querySelectorAll('#daftarPresensi select');
-                const presensiToSave = [];
-                
-                siswaKelas.forEach((siswa, index) => {
-                    const selectElement = presensiSelects[index];
-                    if (selectElement) {
-                        const status = selectElement.value;
-                        presensiToSave.push({
-                            siswa_id: siswa.id,
-                            tanggal: tanggal,
-                            mapel_id: parseInt(mapelId),
-                            guru_id: currentUser.id,
-                            status: status,
-                            kelas: kelas
-                        });
-                    }
+    const kelas = document.getElementById('filterKelas').value;
+    const mapelId = document.getElementById('filterMapelPresensi').value;
+    const tanggal = document.getElementById('tanggalPresensi').value;
+
+    if (!kelas || !mapelId || !tanggal) {
+        showAlert('Pilih kelas, mata pelajaran, dan tanggal terlebih dahulu!', 'error');
+        return;
+    }
+
+    if (!currentUser || !currentUser.id) {
+        showAlert('Sesi login tidak valid. Silakan login ulang!', 'error');
+        return;
+    }
+
+    try {
+        showLoading(); // 🌀 tampilkan loading
+
+        const siswaKelas = siswaData.filter(s => s.kelas === kelas);
+        if (siswaKelas.length === 0) {
+            showAlert('Tidak ada siswa di kelas yang dipilih!', 'error');
+            return;
+        }
+
+        let savedCount = 0;
+        let errorCount = 0;
+        const presensiSelects = document.querySelectorAll('#daftarPresensi select');
+        const presensiToSave = [];
+
+        siswaKelas.forEach((siswa, index) => {
+            const selectElement = presensiSelects[index];
+            if (selectElement) {
+                const status = selectElement.value;
+                presensiToSave.push({
+                    siswa_id: siswa.id,
+                    tanggal: tanggal,
+                    mapel_id: parseInt(mapelId),
+                    guru_id: currentUser.id,
+                    status: status,
+                    kelas: kelas
                 });
-                
-                console.log('Saving presensi data:', presensiToSave);
-                
-                for (const presensiRecord of presensiToSave) {
-                    try {
-                        await savePresensi(presensiRecord);
-                        savedCount++;
-                    } catch (error) {
-                        console.error('Error saving individual presensi:', error);
-                        errorCount++;
-                    }
-                }
-                
-                if (savedCount > 0) {
-                    showAlert(`${savedCount} presensi berhasil disimpan!`, 'success');
-                    await loadAllData();
-                } else {
-                    showAlert('Tidak ada presensi yang berhasil disimpan!', 'error');
-                }
-                
-                if (errorCount > 0) {
-                    showAlert(`${errorCount} presensi gagal disimpan!`, 'error');
-                }
-                
+            }
+        });
+
+        for (const presensiRecord of presensiToSave) {
+            try {
+                await savePresensi(presensiRecord);
+                savedCount++;
             } catch (error) {
-                console.error('Error in saveAllPresensi:', error);
-                showAlert(`Gagal menyimpan presensi: ${error.message}`, 'error');
+                console.error('Error saving individual presensi:', error);
+                errorCount++;
             }
         }
+
+        if (savedCount > 0) {
+            showAlert(`${savedCount} presensi berhasil disimpan!`, 'success');
+            await loadAllData();
+        } else {
+            showAlert('Tidak ada presensi yang berhasil disimpan!', 'error');
+        }
+
+        if (errorCount > 0) {
+            showAlert(`${errorCount} presensi gagal disimpan!`, 'error');
+        }
+
+    } catch (error) {
+        console.error('Error in saveAllPresensi:', error);
+        showAlert(`Gagal menyimpan presensi: ${error.message}`, 'error');
+    } finally {
+        hideLoading(); // ✅ sembunyikan loading setelah selesai
+    }
+}
+
 
         function setSemuaHadir() {
             const kelas = document.getElementById('filterKelas').value;
@@ -1799,5 +1809,14 @@
             document.getElementById('modalEditSiswa').classList.add('hidden');
             document.getElementById('modalEditJurnal').classList.add('hidden');
         }
+
+        function showLoading() {
+    document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
     </script>
 </html>
