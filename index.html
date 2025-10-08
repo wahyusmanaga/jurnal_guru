@@ -483,7 +483,7 @@
 <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
     <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mb-3"></div>
-    <p class="text-gray-700 font-medium">Menyimpan data presensi...</p>
+    <p class="text-gray-700 font-medium">Menyimpan data...</p>
   </div>
 </div>
 
@@ -1405,59 +1405,63 @@
 
         // Jurnal Functions
         document.getElementById('formJurnal').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            if (!currentUser || !currentUser.id) {
-                showAlert('Sesi login tidak valid. Silakan login ulang!', 'error');
-                return;
-            }
-            
-            const tanggal = document.getElementById('tanggalPresensi').value;
-            const kelas = document.getElementById('filterKelas').value;
-            const mapelId = document.getElementById('namaMapel').value;
-            const jamAwal = document.getElementById('jamAwal').value;
-            const jamAkhir = document.getElementById('jamAkhir').value;
-            const kegiatan = document.getElementById('kegiatan').value;
-            const materi = document.getElementById('materi').value;
-            
-            if (!tanggal || !kelas || !mapelId || !jamAwal || !jamAkhir || !kegiatan || !materi) {
-                showAlert('Semua field wajib harus diisi!', 'error');
-                return;
-            }
-            
-            try {
-                const jurnal = {
-                    tanggal: tanggal,
-                    kelas: kelas,
-                    mapel_id: parseInt(mapelId),
-                    jam_awal: parseInt(jamAwal),
-                    jam_akhir: parseInt(jamAkhir),
-                    jumlah_hadir: parseInt(document.getElementById('jumlahHadir').value) || 0,
-                    jumlah_tidak_hadir: parseInt(document.getElementById('jumlahTidakHadir').value) || 0,
-                    nama_tidak_hadir: document.getElementById('namaTidakHadir').value || '',
-                    kegiatan: kegiatan,
-                    materi: materi,
-                    keterangan: document.getElementById('keterangan').value || '',
-                    guru_id: currentUser.id
-                };
-                
-                console.log('Saving jurnal data:', jurnal);
-                
-                const savedJurnal = await saveJurnal(jurnal);
-                jurnalData.push(savedJurnal);
-                
-                showAlert('Jurnal berhasil disimpan!', 'success');
-                document.getElementById('formJurnal').reset();
-                
-                document.getElementById('jumlahHadir').value = '';
-                document.getElementById('jumlahTidakHadir').value = '';
-                document.getElementById('namaTidakHadir').value = '';
-                
-            } catch (error) {
-                console.error('Error saving jurnal:', error);
-                showAlert(`Gagal menyimpan jurnal: ${error.message}`, 'error');
-            }
-        });
+    e.preventDefault();
+    
+    if (!currentUser || !currentUser.id) {
+        showAlert('Sesi login tidak valid. Silakan login ulang!', 'error');
+        return;
+    }
+    
+    const tanggal = document.getElementById('tanggalPresensi').value;
+    const kelas = document.getElementById('filterKelas').value;
+    const mapelId = document.getElementById('namaMapel').value;
+    const jamAwal = document.getElementById('jamAwal').value;
+    const jamAkhir = document.getElementById('jamAkhir').value;
+    const kegiatan = document.getElementById('kegiatan').value;
+    const materi = document.getElementById('materi').value;
+    
+    if (!tanggal || !kelas || !mapelId || !jamAwal || !jamAkhir || !kegiatan || !materi) {
+        showAlert('Semua field wajib harus diisi!', 'error');
+        return;
+    }
+    
+    try {
+        showLoading(); // 🌀 tampilkan loading
+        
+        const jurnal = {
+            tanggal: tanggal,
+            kelas: kelas,
+            mapel_id: parseInt(mapelId),
+            jam_awal: parseInt(jamAwal),
+            jam_akhir: parseInt(jamAkhir),
+            jumlah_hadir: parseInt(document.getElementById('jumlahHadir').value) || 0,
+            jumlah_tidak_hadir: parseInt(document.getElementById('jumlahTidakHadir').value) || 0,
+            nama_tidak_hadir: document.getElementById('namaTidakHadir').value || '',
+            kegiatan: kegiatan,
+            materi: materi,
+            keterangan: document.getElementById('keterangan').value || '',
+            guru_id: currentUser.id
+        };
+        
+        console.log('Saving jurnal data:', jurnal);
+        
+        const savedJurnal = await saveJurnal(jurnal);
+        jurnalData.push(savedJurnal);
+        
+        showAlert('Jurnal berhasil disimpan!', 'success');
+        document.getElementById('formJurnal').reset();
+        document.getElementById('jumlahHadir').value = '';
+        document.getElementById('jumlahTidakHadir').value = '';
+        document.getElementById('namaTidakHadir').value = '';
+        
+    } catch (error) {
+        console.error('Error saving jurnal:', error);
+        showAlert(`Gagal menyimpan jurnal: ${error.message}`, 'error');
+    } finally {
+        hideLoading(); // ✅ sembunyikan loading setelah selesai
+    }
+});
+
 
         // Rekap Functions
         function rekapHarian() {
