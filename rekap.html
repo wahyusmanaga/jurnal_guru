@@ -314,9 +314,7 @@ th:nth-child(8), td:nth-child(8) {
     const weekDates = getWeekDates(year, month, weekNumber);
     let weekContent = `
       <div class="minggu">
-        <div class="minggu-header">
-          MINGGU KE-${weekNumber} - ${monthName.toUpperCase()} ${year}
-        </div>
+      
     `;
 
     hariList.forEach((hari, dayIdx) => {
