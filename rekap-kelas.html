@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Jurnal Mengajar Guru - Database</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+  body {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  margin: 20px;
+}
+
+.minggu {
+  margin-bottom: 60px;
+  page-break-after: always;
+}
+.minggu:last-child {
+  page-break-after: auto;
+}
+
+.minggu-header {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 2px solid #000;
+}
+
+.hari {
+  margin-bottom: 40px;
+}
+
+h3 {
+  margin-bottom: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+  table-layout: fixed; /* <--- penting untuk membatasi lebar kolom */
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 5px;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* ✅ Atur lebar kolom tertentu */
+th:nth-child(1), td:nth-child(1) { width: 40px; }    /* No */
+th:nth-child(2), td:nth-child(2) { width: 60px; }    /* Kelas */
+th:nth-child(3), td:nth-child(3) { width: 70px; }    /* Jml Hadir */
+th:nth-child(4), td:nth-child(4) { width: 80px; }    /* Jml Tidak Hadir */
+th:nth-child(5), td:nth-child(5) { max-width: 150px; } /* Nama Tidak Hadir */
+th:nth-child(6), td:nth-child(6),
+th:nth-child(7), td:nth-child(7),
+th:nth-child(8), td:nth-child(8) { 
+  text-align: justify; 
+  max-width: 200px;
+}
+
+/* Rangkuman dan tanda tangan */
+.rangkuman {
+  margin-top: 20px;
+  width: 60%;
+}
+
+.tanda-tangan {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+}
+.tanda-tangan div {
+  text-align: center;
+}
+.tanda-tangan p {
+  margin-top: 60px;
+  margin-bottom: 0;
+}
+
+.editable-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: center;
+  padding: 2px;
+}
+.editable-input:focus {
+  background: #fff3cd;
+  outline: 1px solid #ffc107;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* ===========================
+   MODE PRINT
+=========================== */
+@media print {
+  .no-print { display: none !important; }
+  body { margin: 10px; }
+
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+
+  table, tr, td, th {
+    page-break-inside: avoid !important;
+  }
+
+  .hari, .rangkuman, .tanda-tangan {
+    page-break-inside: avoid !important;
+  }
+
+  .minggu {
+    page-break-before: always;
+  }
+  .minggu:first-child {
+    page-break-before: auto;
+  }
+
+  .editable-input {
+    border: none;
+    background: transparent;
+  }
+
+  .rangkuman {
+  margin-top: 20px;
+  width: 60%;
+  border-collapse: collapse;
+}
+
+.rangkuman th, .rangkuman td {
+  border: 1px solid #000;
+  padding: 6px;
+  text-align: center;
+}
+
+.rangkuman th[colspan="3"] {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  text-align: center;
+}
+
+}
+
+
+  </style>
+</head>
+<body>
+
+<!-- Header dan Controls -->
+<div class="no-print" style="margin-bottom: 30px; text-align: center; display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;">
+  <div>
+  <label for="kelasSelect" style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Pilih Kelas:</label>
+  <select id="kelasSelect" onchange="generateMonthlyJournal()" style="padding: 8px; border: 1px solid #ccc; font-size: 14px; border-radius: 3px;">
+    <option value="">-- Semua Kelas --</option>
+  </select>
+</div>
+  <div>
+    <label for="bulanSelect" style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Pilih Bulan:</label>
+    <select id="bulanSelect" onchange="generateMonthlyJournal()" style="padding: 8px; border: 1px solid #ccc; font-size: 14px; border-radius: 3px;">
+      <option value="">-- Pilih Bulan --</option>
+      <option value="1">Januari</option>
+      <option value="2">Februari</option>
+      <option value="3">Maret</option>
+      <option value="4">April</option>
+      <option value="5">Mei</option>
+      <option value="6">Juni</option>
+      <option value="7">Juli</option>
+      <option value="8">Agustus</option>
+      <option value="9">September</option>
+      <option value="10">Oktober</option>
+      <option value="11">November</option>
+      <option value="12">Desember</option>
+    </select>
+  </div>
+  <div>
+    <label for="tahunSelect" style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">Tahun:</label>
+    <select id="tahunSelect" onchange="generateMonthlyJournal()" style="padding: 8px; border: 1px solid #ccc; font-size: 14px; border-radius: 3px;">
+      <option value="2025">2025</option>
+      <option value="2026">2026</option>
+      <option value="2027">2027</option>
+    </select>
+  </div>
+  <div>
+    <button  onclick="window.print()" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 5px;">📄 Download PDF</button>
+  </div>
+</div>
+
+<div id="judulContainer" style="display: none; text-align: center; width: 100%; margin-top: 20px; margin-bottom: 20px;">
+  <h2 id="judulJurnal" style="font-size: 28px; font-weight: bold; display: inline-block;">Jurnal Kelas</h2>
+</div>
+
+<div id="jurnal-container"></div>
+
+<script>
+  // Initialize Supabase
+  const supabaseUrl = 'https://pmvfmkcasargsdtvrzid.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtdmZta2Nhc2FyZ3NkdHZyemlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3MTM2ODAsImV4cCI6MjA3NTI4OTY4MH0.-FJjn0g--3rEtx_wc69pPDPgxneXAo-of8kTZanv7aA';
+        
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  const hariList = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
+  const bulanNama = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const container = document.getElementById("jurnal-container");
+  let currentData = {};
+
+  // === Fungsi bikin inisial ===
+  function buatInisial(namaList) {
+    return namaList
+      .split(',')
+      .map(n => n.trim())
+      .filter(n => n !== '')
+      .map(n => {
+        const matchWithNumber = n.match(/^(.+?)\s+(\d+)\s*\(([^)]+)\)$/);
+        const matchWithoutNumber = n.match(/^(.+?)\s*\(([^)]+)\)$/);
+
+        if (matchWithNumber) {
+          const fullName = matchWithNumber[1].trim();
+          const number = matchWithNumber[2].trim();
+          const status = matchWithNumber[3].trim();
+          const initials = fullName.split(/\s+/).map(w => w[0]).join('').toUpperCase();
+          return `${initials}${number}(${status[0].toUpperCase()})`;
+        } else if (matchWithoutNumber) {
+          const fullName = matchWithoutNumber[1].trim();
+          const status = matchWithoutNumber[2].trim();
+          const initials = fullName.split(/\s+/).map(w => w[0]).join('').toUpperCase();
+          return `${initials}(${status[0].toUpperCase()})`;
+        }
+        return n;
+      })
+      .join(', ');
+  }
+
+  // === Ambil tanggal minggu ke-x dalam bulan ===
+  function getWeekDates(year, month, weekNumber) {
+    const firstDay = new Date(year, month - 1, 1);
+    const dayOfWeek = firstDay.getDay();
+    const offset = (dayOfWeek === 0 ? 1 : (1 - dayOfWeek + 7) % 7);
+    const firstMonday = new Date(year, month - 1, 1 + offset);
+
+    const weekStart = new Date(firstMonday);
+    weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
+
+    const dates = [];
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + i);
+      const formatted = date.toLocaleDateString("id-ID", {
+        year: "numeric", month: "2-digit", day: "2-digit"
+      }).split("/").reverse().join("-");
+      dates.push(formatted);
+    }
+    return dates;
+  }
+
+  // === Load data dari Supabase ===
+  async function loadJournalData(year, month) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  if (!currentUser) {
+    alert("Anda harus login terlebih dahulu");
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  const selectedKelas = document.getElementById("kelasSelect").value;
+  const judulElement = document.getElementById("judulJurnal");
+  const judulElementContainer = document.getElementById("judulContainer");
+  
+if (selectedKelas) {
+  judulElement.textContent = `Jurnal Kelas ${selectedKelas}`;
+  judulElement.style.display = "block";
+  judulElementContainer.style.display = "block";
+} else {
+  judulElement.textContent = "";
+  judulElement.style.display = "none";
+  judulElementContainer.style.display = "none";
+}
+
+  // Ambil data dari tabel jurnal + relasi mapel & guru
+  let query = supabase
+    .from('jurnal')
+    .select(`
+      *,
+      mapel:mapel_id (nama_mapel),
+      guru:guru_id (nama_lengkap)
+    `)
+    .gte('tanggal', `${year}-${String(month).padStart(2, '0')}-01`)
+    .lt('tanggal', `${year}-${String(month + 1).padStart(2, '0')}-01`)
+    .order('tanggal', { ascending: true });
+
+  // Admin bisa lihat semua data, guru hanya lihat miliknya
+  if (currentUser.role !== 'admin') {
+    query = query.eq('guru_id', currentUser.id);
+  }
+
+  // Filter kelas jika dipilih
+  if (selectedKelas) {
+    query = query.eq('kelas', selectedKelas);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Gagal ambil data jurnal:", error);
+    return;
+  }
+
+  // Simpan ke currentData per tanggal
+  currentData = {};
+  data.forEach(item => {
+    // Ambil nama_mapel dan nama_guru dari relasi Supabase
+    item.nama_mapel = item.mapel?.nama_mapel || "-";
+    item.nama_guru = item.guru?.nama_lengkap || "-";
+
+    if (!currentData[item.tanggal]) currentData[item.tanggal] = [];
+    currentData[item.tanggal].push(item);
+  });
+}
+
+
+
+
+  // === Hitung rangkuman mingguan (Ijin, Sakit, Alpha) ===
+  function hitungRangkuman(weekDates) {
+    let totalIjin = 0, totalSakit = 0, totalAlpha = 0;
+
+    weekDates.forEach(date => {
+      const entries = currentData[date] || [];
+      entries.forEach(entry => {
+        if (entry.nama_tidak_hadir) {
+          const txt = entry.nama_tidak_hadir;
+          totalIjin += (txt.match(/\(Ijin\)/gi) || []).length;
+          totalSakit += (txt.match(/\(Sakit\)/gi) || []).length;
+          totalAlpha += (txt.match(/\(Alpha\)/gi) || []).length;
+        }
+      });
+    });
+
+    return { totalIjin, totalSakit, totalAlpha };
+  }
+
+  // === Buat tabel mingguan ===
+  // === Buat tabel mingguan ===
+function generateWeeklyJournal(weekNumber, monthName, year, month) {
+  const weekDates = getWeekDates(year, month, weekNumber);
+  let weekContent = `<div class="minggu">`;
+
+  hariList.forEach((hari, dayIdx) => {
+    const currentDate = weekDates[dayIdx];
+    const dayData = currentData[currentDate] || [];
+
+    weekContent += `
+      <div class="hari">
+        <h3>Hari / Tanggal: ${hari}, ${currentDate}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 20px; text-align:center;">No</th>
+              <th style="width: 40px; text-align:center;">Kelas</th>
+              <th style="width: 80px; text-align:center;">Mapel</th>
+              <th style="width: 100px; text-align:center;">Nama Guru</th>
+              <th style="width: 40px; text-align:center;">Jml Hadir</th>
+              <th style="width: 40px; text-align:center;">Jml Tidak Hadir</th>
+              <th style="text-align:center; max-width: 150px;">Nama Tidak Hadir</th>
+              <th style="text-align:center; max-width: 200px;">Kegiatan</th>
+              <th style="text-align:center; max-width: 200px;">Materi</th>
+              <th style="text-align:center; max-width: 200px;">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    // 11 jam pelajaran
+    for (let i = 1; i <= 11; i++) {
+      const entry = dayData.find(e => i >= e.jam_awal && i <= e.jam_akhir);
+
+      if (entry) {
+        if (i === entry.jam_awal) {
+          // Baris jam awal → tampil data
+          weekContent += `
+            <tr>
+              <td>${i}</td>
+              <td>${entry.kelas || "-"}</td>
+              <td>${entry.nama_mapel || "-"}</td>
+              <td>${entry.nama_guru || "-"}</td>
+              <td>${entry.jumlah_hadir ?? "-"}</td>
+              <td>${entry.jumlah_tidak_hadir ?? "-"}</td>
+              <td>${
+                entry.nama_tidak_hadir
+                  ? `<span title="${entry.nama_tidak_hadir}">${buatInisial(entry.nama_tidak_hadir)}</span>`
+                  : "-"
+              }</td>
+              <td style="text-align: justify;">${entry.kegiatan || "-"}</td>
+              <td style="text-align: justify;">${entry.materi || "-"}</td>
+              <td style="text-align: justify;">${entry.keterangan || "-"}</td>
+            </tr>
+          `;
+        } else {
+          // Baris di tengah rentang jam
+          weekContent += `
+            <tr>
+              <td>${i}</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          `;
+        }
+      } else {
+        // Tidak ada entry untuk jam ini
+        weekContent += `
+          <tr>
+            <td>${i}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        `;
+      }
+    }
+
+    weekContent += `
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Setelah hari Jumat → tambahkan rangkuman
+    if (hari === "Jumat") {
+      const rangkuman = hitungRangkuman(weekDates);
+      weekContent += `
+        <table class="rangkuman">
+          <thead>
+            <tr><th colspan="3">Rangkuman Mingguan</th></tr>
+            <tr><th>Ijin</th><th>Sakit</th><th>Alpha</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${rangkuman.totalIjin}</td>
+              <td>${rangkuman.totalSakit}</td>
+              <td>${rangkuman.totalAlpha}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="display:flex;justify-content:space-between;text-align:center;margin-top:40px;">
+          <div style="flex:1;">
+            <div>Mengetahui,</div>
+            <div>Kepala Sekolah</div>
+            <div style="margin:60px 0 5px;">_____________________</div>
+            <div>NIP. ________________</div>
+          </div>
+          <div style="flex:1;">
+            <div>..................., .......................</div>
+            <div>Guru Mata Pelajaran</div>
+            <div style="margin:60px 0 5px;">_____________________</div>
+            <div>NIP. ________________</div>
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  weekContent += `</div>`;
+  return { content: weekContent, dates: weekDates };
+}
+
+// === Ambil daftar kelas unik dari tabel siswa ===
+async function loadKelasList() {
+  const kelasSelect = document.getElementById("kelasSelect");
+  kelasSelect.innerHTML = '<option value="">Memuat...</option>';
+
+  const { data, error } = await supabase
+    .from('siswa')
+    .select('kelas')
+    .neq('kelas', null)
+    .order('kelas', { ascending: true });
+
+  if (error) {
+    console.error("Gagal memuat kelas:", error);
+    kelasSelect.innerHTML = '<option value="">Gagal memuat kelas</option>';
+    return;
+  }
+
+  // Ambil nilai kelas unik
+  const uniqueKelas = [...new Set(data.map(d => d.kelas))];
+
+  kelasSelect.innerHTML = '<option value="">-- Semua Kelas --</option>' +
+    uniqueKelas.map(k => `<option value="${k}">${k}</option>`).join('');
+}
+
+
+  // === Generate jurnal bulanan ===
+  async function generateMonthlyJournal() {
+    const selectedMonth = parseInt(document.getElementById("bulanSelect").value);
+    const selectedYear = parseInt(document.getElementById("tahunSelect").value);
+
+    if (!selectedMonth) {
+      container.innerHTML = `<h2 style="text-align:center;color:#666;">Silakan pilih bulan untuk menampilkan jurnal</h2>`;
+      return;
+    }
+
+    container.innerHTML = '<div class="loading">Memuat data...</div>';
+    await loadJournalData(selectedYear, selectedMonth);
+
+    container.innerHTML = "";
+    const monthName = bulanNama[selectedMonth];
+
+    for (let week = 1; week <= 5; week++) {
+      const weekResult = generateWeeklyJournal(week, monthName, selectedYear, selectedMonth);
+      container.innerHTML += weekResult.content;
+    }
+  }
+
+  // === Jalankan awal ===
+ // Jalankan awal
+loadKelasList(); // 🔹 Muat daftar kelas dari tabel siswa
+generateMonthlyJournal(); // 🔹 Tampilkan jurnal awal
+
+
+</script>
+</html>
