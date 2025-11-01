@@ -1,0 +1,44 @@
+create or replace function rekap_presensi_guru(
+    guru_uuid uuid,
+    bulan integer default null,
+    tahun integer default null
+)
+returns table (
+    siswa_id integer,
+    nama_siswa text,
+    kelas text,
+    total_hadir integer,
+    total_sakit integer,
+    total_ijin integer,
+    total_alpha integer,
+    total_dispen integer,
+    total_semua integer,
+    persentase numeric
+)
+language sql
+as $$
+  select
+      s.id as siswa_id,
+      s.nama as nama_siswa,
+      s.kelas,
+      count(*) filter (where p.status = 'Hadir') as total_hadir,
+      count(*) filter (where p.status = 'Sakit') as total_sakit,
+      count(*) filter (where p.status = 'Ijin') as total_ijin,
+      count(*) filter (where p.status = 'Alpha') as total_alpha,
+      count(*) filter (where p.status = 'Dispen') as total_dispen,
+      count(*) as total_semua,
+      round(
+        (
+          (
+            count(*) filter (where p.status in ('Hadir', 'Dispen'))
+          )::decimal / nullif(count(*), 0)
+        ) * 100, 1
+      ) as persentase
+  from presensi p
+  join siswa s on s.id = p.siswa_id
+  where p.guru_id = guru_uuid
+    and (bulan is null or extract(month from p.tanggal) = bulan)
+    and (tahun is null or extract(year from p.tanggal) = tahun)
+  group by s.id, s.nama, s.kelas
+  order by s.nama;
+$$;
