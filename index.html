@@ -573,6 +573,7 @@
               if (siswaError) throw siswaError;
               siswaData = siswa || [];
 
+
                 // Load presensi data with guru filter
                 let presensiQuery = supabaseClient
                     .from('presensi')
@@ -1538,83 +1539,95 @@
             document.getElementById('hasilRekap').innerHTML = html;
         }
 
-        function rekapSemuaWaktu() {
-            const kelas = document.getElementById('filterKelasRekap').value;
-            
-            const presensiGuru = presensiData.filter(p => p.guru_id == currentUser.id);
-            
-            const siswaIds = [...new Set(presensiGuru.map(p => p.siswa_id))];
-            let siswaFilter = siswaData.filter(s => siswaIds.includes(s.id));
-            
-            if (kelas) {
-                siswaFilter = siswaFilter.filter(s => s.kelas === kelas);
-            }
-            
-            let html = `
-                <h3 class="text-lg font-semibold mb-4">Rekap Semua Waktu</h3>
-                <p class="text-sm text-gray-600 mb-4">Menampilkan rekap presensi untuk mata pelajaran yang Anda ajar</p>
-                <div class="overflow-x-auto">
-                    <table class="w-full table-auto">
-                        <thead>
-                            <tr class="bg-gray-50">
-                                <th class="px-4 py-2 text-left">No</th>
-                                <th class="px-4 py-2 text-left">Nama</th>
-                                <th class="px-4 py-2 text-left">NIS</th>
-                                <th class="px-4 py-2 text-left">Kelas</th>
-                                <th class="px-4 py-2 text-left">Hadir</th>
-                                <th class="px-4 py-2 text-left">Sakit</th>
-                                <th class="px-4 py-2 text-left">Ijin</th>
-                                <th class="px-4 py-2 text-left">Alpha</th>
-                                <th class="px-4 py-2 text-left">Dispen</th>
-                                <th class="px-4 py-2 text-left">Total</th>
-                                <th class="px-4 py-2 text-left">Persentase</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            if (siswaFilter.length === 0) {
-                html += `
-                    <tr>
-                        <td colspan="11" class="px-4 py-8 text-center text-gray-500">
-                            Tidak ada data presensi untuk mata pelajaran yang Anda ajar
-                        </td>
+        async function rekapSemuaWaktu() {
+    const kelas = document.getElementById('filterKelasRekap').value;
+
+    // Ambil data user aktif (guru)
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+        console.error('Gagal mendapatkan user:', userError);
+        alert('Gagal memuat data guru.');
+        return;
+    }
+
+    // Ambil data rekap langsung dari fungsi RPC
+    const { data, error } = await supabaseClient.rpc('rekap_presensi_guru', {
+        guru_uuid: user.id, // auth_id guru aktif
+        bulan: null, // tampilkan semua waktu
+        tahun: null
+    });
+
+    if (error) {
+        console.error('RPC Error:', error);
+        alert('Gagal memuat rekap presensi.');
+        return;
+    }
+
+    // Filter hasil berdasarkan kelas (kalau dipilih)
+    let hasilRekap = data;
+    if (kelas) {
+        hasilRekap = hasilRekap.filter(r => r.kelas === kelas);
+    }
+
+    hasilRekap.sort((a, b) => {
+    if (a.kelas < b.kelas) return -1;
+    if (a.kelas > b.kelas) return 1;
+    return a.nama_siswa.localeCompare(b.nama_siswa);
+});
+
+    let html = `
+        <h3 class="text-lg font-semibold mb-4">Rekap Semua Waktu</h3>
+        <p class="text-sm text-gray-600 mb-4">Menampilkan rekap presensi untuk mata pelajaran yang Anda ajar</p>
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="px-4 py-2 text-left">No</th>
+                        <th class="px-4 py-2 text-left">Nama</th>
+                        <th class="px-4 py-2 text-left">Kelas</th>
+                        <th class="px-4 py-2 text-left">Hadir</th>
+                        <th class="px-4 py-2 text-left">Sakit</th>
+                        <th class="px-4 py-2 text-left">Ijin</th>
+                        <th class="px-4 py-2 text-left">Alpha</th>
+                        <th class="px-4 py-2 text-left">Dispen</th>
+                        <th class="px-4 py-2 text-left">Total</th>
+                        <th class="px-4 py-2 text-left">Persentase</th>
                     </tr>
-                `;
-            } else {
-                siswaFilter.forEach((siswa, index) => {
-                    const presensiSiswa = presensiGuru.filter(p => p.siswa_id === siswa.id);
-                    
-                    const hadir = presensiSiswa.filter(p => p.status === 'Hadir').length;
-                    const sakit = presensiSiswa.filter(p => p.status === 'Sakit').length;
-                    const ijin = presensiSiswa.filter(p => p.status === 'Ijin').length;
-                    const alpha = presensiSiswa.filter(p => p.status === 'Alpha').length;
-                    const dispen = presensiSiswa.filter(p => p.status === 'Dispen').length;
-                    
-                    const total = presensiSiswa.length;
-                    const persentase = total > 0 ? (((hadir + dispen) / total) * 100).toFixed(1) : 0;
-                    
-                    html += `
-                        <tr class="border-b">
-                            <td class="px-4 py-2">${index + 1}</td>
-                            <td class="px-4 py-2">${siswa.nama}</td>
-                            <td class="px-4 py-2">${siswa.nis || '-'}</td>
-                            <td class="px-4 py-2">${siswa.kelas}</td>
-                            <td class="px-4 py-2 text-green-600">${hadir}</td>
-                            <td class="px-4 py-2 text-yellow-600">${sakit}</td>
-                            <td class="px-4 py-2 text-blue-600">${ijin}</td>
-                            <td class="px-4 py-2 text-red-600">${alpha}</td>
-                            <td class="px-4 py-2 text-purple-600">${dispen}</td>
-                            <td class="px-4 py-2 font-semibold">${total}</td>
-                            <td class="px-4 py-2 font-semibold">${persentase}%</td>
-                        </tr>
-                    `;
-                });
-            }
-            
-            html += '</tbody></table></div>';
-            document.getElementById('hasilRekap').innerHTML = html;
-        }
+                </thead>
+                <tbody>
+    `;
+
+    if (!hasilRekap || hasilRekap.length === 0) {
+        html += `
+            <tr>
+                <td colspan="10" class="px-4 py-8 text-center text-gray-500">
+                    Tidak ada data presensi untuk mata pelajaran yang Anda ajar
+                </td>
+            </tr>
+        `;
+    } else {
+        hasilRekap.forEach((r, index) => {
+            html += `
+                <tr class="border-b">
+                    <td class="px-4 py-2">${index + 1}</td>
+                    <td class="px-4 py-2">${r.nama_siswa}</td>
+                    <td class="px-4 py-2">${r.kelas}</td>
+                    <td class="px-4 py-2 text-green-600">${r.total_hadir}</td>
+                    <td class="px-4 py-2 text-yellow-600">${r.total_sakit}</td>
+                    <td class="px-4 py-2 text-blue-600">${r.total_ijin}</td>
+                    <td class="px-4 py-2 text-red-600">${r.total_alpha}</td>
+                    <td class="px-4 py-2 text-purple-600">${r.total_dispen}</td>
+                    <td class="px-4 py-2 font-semibold">${r.total_semua}</td>
+                    <td class="px-4 py-2 font-semibold">${r.persentase}%</td>
+                </tr>
+            `;
+        });
+    }
+
+    html += '</tbody></table></div>';
+    document.getElementById('hasilRekap').innerHTML = html;
+}
+
 
         function loadJurnal() {
             const tanggal = document.getElementById('filterTanggalJurnal').value;
